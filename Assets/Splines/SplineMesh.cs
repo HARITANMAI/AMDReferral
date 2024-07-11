@@ -15,24 +15,35 @@ public class SplineMesh : MonoBehaviour
 
     public void OnDrawGizmos()
     {
+        //Drawings debug spheres at all the custom set points in the world space
         for( int i = 0; i < controlPoints.Length; i++)
         {
             Gizmos.DrawSphere(GetPos(i), 0.5f);
         }
 
+        //Function which draws the curve of given points
         Handles.DrawBezier(
             GetPos(0),
             GetPos(3),
             GetPos(1),
             GetPos(2),
-            Color.white, EditorGUIUtility.whiteTexture, 1f);
+            Color.white, 
+            EditorGUIUtility.whiteTexture,
+            1f);
 
-        OrientedPoint testPoint = GetBezierPoint(t);
-        //Quaternion testOrientation = GetBezierOrientation(t);
+        //Setting a handle and debug sphere at the bezier point
         Gizmos.color = Color.red;
-        Gizmos.DrawSphere(testPoint.pos, 0.2f);
+        OrientedPoint testPoint = GetBezierPoint(t);
         Handles.PositionHandle(testPoint.pos, testPoint.rot);
+
+        //Drawing debug spheres at an offset from the bezier point of the curve
+        float radius = 0.3f;
+        Gizmos.DrawSphere(testPoint.LocalToWorld(Vector3.right * 3f), radius);
+        Gizmos.DrawSphere(testPoint.LocalToWorld(Vector3.right * 4f), radius);
+        Gizmos.DrawSphere(testPoint.LocalToWorld(Vector3.right * -3f), radius);
+        Gizmos.DrawSphere(testPoint.LocalToWorld(Vector3.right * -4f), radius);
         Gizmos.color = Color.white;
+        Gizmos.DrawSphere(testPoint.pos, 0.2f);
     }
 
     OrientedPoint GetBezierPoint(float t)
@@ -56,14 +67,5 @@ public class SplineMesh : MonoBehaviour
         Vector3 tangent = (e - d).normalized;
 
         return new OrientedPoint(pos,tangent);
-        //returning the point which forms the berzier curve
-        //return Vector3.Lerp(d ,e , t);
     }
-
-    //Quaternion GetBezierOrientation(float t)
-    //{
-    //    Vector3 tangent = GetBezierTangent(t);
-
-    //    return Quaternion.LookRotation(tangent);
-    //}
 }
