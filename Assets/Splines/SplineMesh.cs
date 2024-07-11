@@ -38,10 +38,17 @@ public class SplineMesh : MonoBehaviour
 
         //Drawing debug spheres at an offset from the bezier point of the curve
         float radius = 0.3f;
-        Gizmos.DrawSphere(testPoint.LocalToWorld(Vector3.right * 3f), radius);
-        Gizmos.DrawSphere(testPoint.LocalToWorld(Vector3.right * 4f), radius);
-        Gizmos.DrawSphere(testPoint.LocalToWorld(Vector3.right * -3f), radius);
-        Gizmos.DrawSphere(testPoint.LocalToWorld(Vector3.right * -4f), radius);
+        void DrawPoint(Vector2 localPos) => Gizmos.DrawSphere(testPoint.LocalToWorld(localPos), radius);
+
+        DrawPoint(Vector3.right * 3f);
+        DrawPoint(Vector3.right * 4f);
+        DrawPoint(Vector3.right * -3f);
+        DrawPoint(Vector3.right * -4f);
+
+        //Y AXIS
+        DrawPoint(Vector3.up * 4f);
+        DrawPoint(Vector3.up * 2f);
+
         Gizmos.color = Color.white;
         Gizmos.DrawSphere(testPoint.pos, 0.2f);
     }
@@ -63,6 +70,7 @@ public class SplineMesh : MonoBehaviour
         Vector3 d = Vector3.Lerp(a, b, t);
         Vector3 e = Vector3.Lerp(b, c, t);
 
+        //Getting the bezier point and it's orientation/rotation
         Vector3 pos = Vector3.Lerp(d, e, t);
         Vector3 tangent = (e - d).normalized;
 
