@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public struct OrientedPoint
 {
@@ -17,5 +18,11 @@ public struct OrientedPoint
     {
         this.pos = pos;
         this.rot = Quaternion.LookRotation(forward);
+    }
+
+    //Defining a local space position to determine the width of the road from the knot which will then translate to world space
+    public Vector3 LocalToWorld(Vector3 LocalSpacePosition)
+    {
+        return pos + rot * LocalSpacePosition;
     }
 }
