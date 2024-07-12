@@ -16,6 +16,4 @@ public class Mesh2D : ScriptableObject
     //Making array to store vertices of the 2D mesh
     public Vertex[] vertices;
     public int[] lineIndices;
-
-
 }

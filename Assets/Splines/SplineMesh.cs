@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using System.Linq;
+
 public class SplineMesh : MonoBehaviour
 {
     //Declaring an array to hold the points/knots of the bezier curve
@@ -12,6 +14,9 @@ public class SplineMesh : MonoBehaviour
 
     //Function to get the position of a specific point
     Vector3 GetPos(int i ) => controlPoints[i].position;
+
+    //Reference to the 'SO' where the elements that hold position of the road shape are stored
+    [SerializeField] Mesh2D shape2D;
 
     public void OnDrawGizmos()
     {
@@ -40,14 +45,19 @@ public class SplineMesh : MonoBehaviour
         float radius = 0.3f;
         void DrawPoint(Vector2 localPos) => Gizmos.DrawSphere(testPoint.LocalToWorld(localPos), radius);
 
-        DrawPoint(Vector3.right * 3f);
-        DrawPoint(Vector3.right * 4f);
-        DrawPoint(Vector3.right * -3f);
-        DrawPoint(Vector3.right * -4f);
+        //Linq stuff idk
+        Vector3[] verts = shape2D.vertices.Select(v => testPoint.LocalToWorld(v.points)).ToArray();
 
-        //Y AXIS
-        DrawPoint(Vector3.up * 4f);
-        DrawPoint(Vector3.up * 2f);
+        //Iterate through every vertex and draw the mesh
+        for (int i = 0;i < shape2D.lineIndices.Length;i++) 
+        {
+            Vector3 a = verts[shape2D.lineIndices[i]];
+            Vector3 b = verts[shape2D.lineIndices[i+1]];    
+
+            Gizmos.DrawLine(a, b);
+
+            DrawPoint(shape2D.vertices[i].points * 3f);
+        }
 
         Gizmos.color = Color.white;
         Gizmos.DrawSphere(testPoint.pos, 0.2f);
