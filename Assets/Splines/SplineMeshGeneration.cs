@@ -11,7 +11,7 @@ using UnityEngine.Splines;
 public class SplineMeshGeneration : MonoBehaviour
 {
     [SerializeField] SplineContainer container;
-    [SerializeField, Range(2, 64)] private int segments;
+    [SerializeField, Range(1, 64)] private int segments;
     [SerializeField, Range(0, 1)] private float t;
     [SerializeField, Range(2, 200f)] float width;
     Mesh mesh;
@@ -69,7 +69,6 @@ public class SplineMeshGeneration : MonoBehaviour
             //Used InverseTransformPoint to fix the bug where verts were being set in the world space
             Vector3 bezierPoint = transform.InverseTransformPoint(container.EvaluatePosition(t));
 
-
             //Getting the Y Orientation
             Vector3 bezierPointY = container.EvaluateUpVector(t);
 
@@ -100,21 +99,21 @@ public class SplineMeshGeneration : MonoBehaviour
 
         //Setting up triangles
         List<int> tris = new List<int>();
-        int vCount = segments * 2;
-        for(int i = 0; i <=  segments; i++)
+        int vCount = verts.Count;
+        for(int i = 0; i < segments; i++)
         {
             int v0  = i * 2;
             int v1 = v0 + 1;
             int v2 = (v0 + 2) % vCount;
             int v3 = (v0 + 3) % vCount;
 
-            tris.Add(v0);
+            tris.Add(v3);
             tris.Add(v2);
-            tris.Add(v3);
-
-            tris.Add(v3);
-            tris.Add(v1);
             tris.Add(v0);
+
+            tris.Add(v0);
+            tris.Add(v1);
+            tris.Add(v3);
         }
 
         mesh.SetVertices(verts);
@@ -127,7 +126,8 @@ public class SplineMeshGeneration : MonoBehaviour
     {
         for(int i = 0; i < vertices.Count; i++) 
         {
-            Gizmos.DrawSphere(vertices[i], 5f);
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawSphere(vertices[i], 10f);
         }
 
         for (int i = 0; i <= segments; i++)
@@ -157,7 +157,7 @@ public class SplineMeshGeneration : MonoBehaviour
         }
 
         Gizmos.color = Color.red;
-        Gizmos.DrawSphere(position, 5f);
+        Gizmos.DrawSphere(position, 10f);
         Gizmos.color = Color.white;
     }
 }
