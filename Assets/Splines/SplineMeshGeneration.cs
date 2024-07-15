@@ -60,12 +60,10 @@ public class SplineMeshGeneration : MonoBehaviour
     {
         //Clearing to prevent errors like triangle mesh referring to vertices which changed,removed,etc.
         mesh.Clear();
-        
-
+       
         //Setting up the vertices
         //List<Vector3> verts = new List<Vector3>();
-
-        for(int i = 0; i < segments; i++)
+        for(int i = 0; i <= segments; i++)
         {
             //Getting the point at t value on the curve
             float t = i/(float)segments;
@@ -84,8 +82,9 @@ public class SplineMeshGeneration : MonoBehaviour
 
             //Adding the 2 vertices to the left and right side of the bezier curve
             verts.Add(point1);
-            verts.Add(-point2);
+            verts.Add(point2);
         }
+        mesh.SetVertices(verts);
 
         Debug.Log($"VERTICES COUNT BEFORE TRIANGLES {verts.Count}");
 
@@ -108,8 +107,6 @@ public class SplineMeshGeneration : MonoBehaviour
             tris.Add(v3);
             tris.Add(v4);
         }
-
-        mesh.SetVertices(verts);
         mesh.SetTriangles(tris, 0);
         mesh.RecalculateNormals();
     }
