@@ -28,6 +28,7 @@ public class SplineMeshGeneration : MonoBehaviour
         container = GetComponent<SplineContainer>();
     }
 
+    //Adding these 3 to ensure that the mesh change when the spline is modify in the scene
     private void OnEnable()
     {
         Spline.Changed += OnSplineChanged;

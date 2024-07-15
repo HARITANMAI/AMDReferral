@@ -1634,7 +1634,7 @@ MonoBehaviour:
   - {fileID: 945672282}
   - {fileID: 827232950}
   segmentCount: 9
-  t: 0.06
+  t: 0.017
   shape2D: {fileID: 11400000, guid: fe28d7590a5832a41b43337f54038d12, type: 2}
 --- !u!23 &2146008406
 MeshRenderer:
