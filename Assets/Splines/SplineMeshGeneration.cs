@@ -13,7 +13,7 @@ public class SplineMeshGeneration : MonoBehaviour
     [SerializeField] SplineContainer container;
     [SerializeField, Range(2, 64)] private int segments;
     [SerializeField, Range(0, 1)] private float t;
-    [SerializeField, Range(0, 200f)] private float width = 1.0f;
+    [SerializeField, Range(2, 200f)] float width;
     Mesh mesh;
     float3 position;
     float3 tangent;
