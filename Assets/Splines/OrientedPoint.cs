@@ -25,4 +25,9 @@ public struct OrientedPoint
     {
         return pos + rot * LocalSpacePosition;
     }
+
+    public Vector3 LocalToWorldVect(Vector3 LocalSpacePosition)
+    {
+        return rot * LocalSpacePosition;
+    }
 }
