@@ -1,17 +1,16 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
 
-
 [ExecuteInEditMode()]
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-public class SplineMeshGeneration : MonoBehaviour
+public class SplineRollerCoaster : MonoBehaviour
 {
     [SerializeField] SplineContainer container;
     [SerializeField, Range(1, 128)] private int segments;
+    [SerializeField, Range(0, 5)] private int segmentGap;
     [SerializeField, Range(0, 1)] private float t;
     [SerializeField, Range(2, 200f)] float width;
     Mesh mesh;
@@ -55,7 +54,8 @@ public class SplineMeshGeneration : MonoBehaviour
     {
         //Clearing to prevent errors like triangle mesh referring to vertices which changed,removed,etc.
         mesh.Clear();
-       
+
+
         //Setting up the vertices
         List<Vector3> verts = new List<Vector3>();
         verts.Clear();
@@ -64,14 +64,18 @@ public class SplineMeshGeneration : MonoBehaviour
         for (int i = 0; i <= segments; i++)
         {
             //Getting t/percentage value on the current curve
-            float t = i/(float)segments;
+            float t = i / (float)segments;
 
             //Used InverseTransformPoint to fix the bug where verts were being set in the world space
             Vector3 bezierPoint = transform.InverseTransformPoint(container.EvaluatePosition(t));
 
-            //Getting the XYZ Orientation
+            //Getting the Y Orientation
             Vector3 bezierPointY = container.EvaluateUpVector(t);
+
+            //Getting the Z Orientation
             Vector3 bezierPointZ = container.EvaluateTangent(t);
+
+            //Getting the X Orientation
             Vector3 bezierPointX = Vector3.Cross(bezierPointY, bezierPointZ);
             bezierPointX.Normalize();
 
@@ -96,9 +100,9 @@ public class SplineMeshGeneration : MonoBehaviour
         //Setting up triangles
         List<int> tris = new List<int>();
         int vCount = verts.Count;
-        for(int i = 0; i < segments; i++)
+        for (int i = 0; i < segments; i++)
         {
-            int v0  = i * 2;
+            int v0 = i * 2;
             int v1 = v0 + 1;
             int v2 = (v0 + 2) % vCount;
             int v3 = (v0 + 3) % vCount;
@@ -117,19 +121,12 @@ public class SplineMeshGeneration : MonoBehaviour
         mesh.RecalculateNormals();
 
         //SUPPORT COLUMNS OF THE ROAD
-        for (int i = 1; i < segments; i += 2)
-        {
-            float t = i / (float)(segments);
-
-            Vector3 bezierPoint = transform.InverseTransformPoint(container.EvaluatePosition(t));
-            Vector3 bezierPointZ = container.EvaluateTangent(t);
-            Vector3 bezierPointY = container.EvaluateUpVector(t);
-            Vector3 bezierPointX = Vector3.Cross(bezierPointY, bezierPointZ);
-            bezierPointX.Normalize();
-
-
-        }
+        //for(int i = 1; i < segments/2; i += 2)
+        //{
+        //    float t = i / (float)(segments);
+        //}
     }
+
     private void OnDrawGizmos()
     {
         for (int i = 0; i < vertices.Count; i++)
@@ -138,7 +135,7 @@ public class SplineMeshGeneration : MonoBehaviour
             Gizmos.DrawSphere(vertices[i], 10f);
         }
 
-        for (int i = 0; i <= segments; i++)
+        for (int i = 1; i <= segments; i += 4)
         {
             float percent = i / (float)segments;
 
@@ -147,25 +144,23 @@ public class SplineMeshGeneration : MonoBehaviour
             Vector3 forwardVector = container.EvaluateTangent(percent);
             Vector3 rightVector = Vector3.Cross(upVector, forwardVector).normalized;
 
-            //upVector.Normalize();
-            //forwardVector.Normalize();
-
-            Vector3 leftPos = position - (rightVector * width);
             Vector3 rightPos = position + (rightVector * width);
-
-            //Gizmos.color = Color.blue;
-            //Gizmos.DrawSphere(leftPos, 10f);
-            //Gizmos.DrawSphere(rightPos, 10f);
+            Vector3 leftPos = position - (rightVector * width);
             Gizmos.color = Color.white;
             Gizmos.DrawLine(leftPos, rightPos);
 
-            Vector3 calcPos = position;
-            calcPos.y = -100;
-            Gizmos.DrawLine(position, calcPos);
+            Vector3 rightCol = position + (rightVector * (width / 1.5f));
+            Vector3 leftCol = position - (rightVector * (width / 1.5f));
+            Vector3 rightColDown = rightCol;
+            Vector3 leftColDown = leftCol;
+            rightColDown.y = -10f;
+            leftColDown.y = -10f;
+            Gizmos.DrawLine(leftCol, leftColDown);
+            Gizmos.DrawLine(rightCol, rightColDown);
         }
 
         Gizmos.color = Color.red;
-        Gizmos.DrawSphere(position, 10f);
+        Gizmos.DrawSphere(position, 20f);
         Gizmos.color = Color.white;
     }
 }
