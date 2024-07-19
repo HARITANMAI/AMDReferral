@@ -11,7 +11,7 @@ using UnityEngine.Splines;
 public class SplineMeshGeneration : MonoBehaviour
 {
     [SerializeField] SplineContainer container;
-    [SerializeField, Range(1, 128)] private int segments;
+    [SerializeField, Range(1, 64)] private int segments;
     [SerializeField, Range(0, 1)] private float t;
     [SerializeField, Range(2, 200f)] float width;
     Mesh mesh;
@@ -19,6 +19,7 @@ public class SplineMeshGeneration : MonoBehaviour
     float3 tangent;
     float3 upVector;
     List<Vector3> vertices = new List<Vector3>();
+    List<Vector3> verticesCol = new List<Vector3>();
 
     private void Awake()
     {
@@ -116,28 +117,64 @@ public class SplineMeshGeneration : MonoBehaviour
         mesh.SetTriangles(tris, 0);
         mesh.RecalculateNormals();
 
-        //SUPPORT COLUMNS OF THE ROAD
+        //SUPPORTS COLUMNS/PILLARS UNDER THE ROAD
+        List<Vector3> vertsPillar = new List<Vector3>();
+        vertsPillar.Clear();
+        verticesCol.Clear();
+
         for (int i = 1; i < segments; i += 2)
         {
             float t = i / (float)(segments);
 
             Vector3 bezierPoint = transform.InverseTransformPoint(container.EvaluatePosition(t));
+            //Vector3 bezierPoint = container.EvaluatePosition(t);
             Vector3 bezierPointZ = container.EvaluateTangent(t);
             Vector3 bezierPointY = container.EvaluateUpVector(t);
             Vector3 bezierPointX = Vector3.Cross(bezierPointY, bezierPointZ);
             bezierPointX.Normalize();
 
+            Vector3 point1 = bezierPoint + (bezierPointX * width / 4) + (bezierPointY * width / 4);
+            Vector3 point2 = bezierPoint - (bezierPointX * width / 4) + (bezierPointY * width / 4);
+            Vector3 point3 = bezierPoint + (bezierPointX * width / 4) - (bezierPointY * width / 4);
+            Vector3 point4 = bezierPoint - (bezierPointX * width / 4) - (bezierPointY * width / 4);
 
+            vertsPillar.Add(point1);
+            vertsPillar.Add(point2);
+            vertsPillar.Add(point3);
+            vertsPillar.Add(point4);
+
+
+            //Gizmo Debug Vertices
+            Vector3 debugPoint = container.EvaluatePosition(t);
+            bezierPointZ.Normalize();
+            Vector3 debugPoint1 = debugPoint + (bezierPointX * width / 4) + (bezierPointZ * width / 4);
+            Vector3 debugPoint2 = debugPoint - (bezierPointX * width / 4) + (bezierPointZ * width / 4);
+            Vector3 debugPoint3 = debugPoint + (bezierPointX * width / 4) - (bezierPointZ * width / 4);
+            Vector3 debugPoint4 = debugPoint - (bezierPointX * width / 4) - (bezierPointZ * width / 4);
+
+            verticesCol.Add(debugPoint1);
+            verticesCol.Add(debugPoint2);
+            verticesCol.Add(debugPoint3);
+            verticesCol.Add(debugPoint4);
         }
     }
     private void OnDrawGizmos()
     {
+        //Display spline mesh vertices
         for (int i = 0; i < vertices.Count; i++)
         {
             Gizmos.color = Color.yellow;
             Gizmos.DrawSphere(vertices[i], 10f);
         }
 
+        //Display column/pillar vertices
+        for (int i = 0; i < verticesCol.Count; i++)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawSphere(verticesCol[i], 10f);
+        }
+
+        //Display 't' value, segements, pillar position
         for (int i = 0; i <= segments; i++)
         {
             float percent = i / (float)segments;
