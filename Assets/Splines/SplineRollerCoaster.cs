@@ -95,7 +95,7 @@ public class SplineRollerCoaster : MonoBehaviour
             vertices.Add(point4);
         }
 
-        Debug.Log($"VERTICES COUNT BEFORE TRIANGLE: {verts.Count}");
+        //Debug.Log($"VERTICES COUNT BEFORE TRIANGLE: {verts.Count}");
 
         //Setting up triangles
         List<int> tris = new List<int>();

@@ -92,7 +92,7 @@ public class SplineMeshGeneration : MonoBehaviour
             vertices.Add(point4);
         }
 
-        Debug.Log($"VERTICES COUNT BEFORE TRIANGLE: {verts.Count}");
+        //Debug.Log($"VERTICES COUNT BEFORE TRIANGLE: {verts.Count}");
 
         //Setting up triangles
         List<int> tris = new List<int>();
@@ -126,13 +126,14 @@ public class SplineMeshGeneration : MonoBehaviour
         {
             float t = i / (float)(segments);
 
+            //Getting Bezier point and it's XYZ coords
             Vector3 bezierPoint = transform.InverseTransformPoint(container.EvaluatePosition(t));
-            //Vector3 bezierPoint = container.EvaluatePosition(t);
             Vector3 bezierPointZ = container.EvaluateTangent(t);
             Vector3 bezierPointY = container.EvaluateUpVector(t);
             Vector3 bezierPointX = Vector3.Cross(bezierPointY, bezierPointZ);
             bezierPointX.Normalize();
 
+            //Four points that form a square around the bezier point which is the center of each segement
             Vector3 point1 = bezierPoint + (bezierPointX * width / 4) + (bezierPointY * width / 4);
             Vector3 point2 = bezierPoint - (bezierPointX * width / 4) + (bezierPointY * width / 4);
             Vector3 point3 = bezierPoint + (bezierPointX * width / 4) - (bezierPointY * width / 4);
@@ -143,19 +144,48 @@ public class SplineMeshGeneration : MonoBehaviour
             vertsPillar.Add(point3);
             vertsPillar.Add(point4);
 
+            //Raycasting to check until where the pillars should extend to
+            //Vector3 groundPoint = Vector3.zero;
+            //if(Physics.Raycast(bezierPoint, Vector3.down, out RaycastHit hit))
+            //{
+            //    groundPoint = hit.point;
+            //}
+            //else
+            //{
+            //    Debug.Log($"The raycast did not hit anything");
+            //}
 
-            //Gizmo Debug Vertices
+            //Vector3 point5 = groundPoint + (bezierPointX * width / 4) + (bezierPointZ * width / 4);
+            //Vector3 point6 = groundPoint - (bezierPointX * width / 4) + (bezierPointZ * width / 4);
+            //Vector3 point7 = groundPoint + (bezierPointX * width / 4) - (bezierPointZ * width / 4);
+            //Vector3 point8 = groundPoint - (bezierPointX * width / 4) - (bezierPointZ * width / 4);
+
+
+            //Gizmo Debug Vertices for visual representation
+            //Vector3 groundPoint = container.EvaluatePosition(t);
+            //bezierPointY.Normalize();
             Vector3 debugPoint = container.EvaluatePosition(t);
             bezierPointZ.Normalize();
+
             Vector3 debugPoint1 = debugPoint + (bezierPointX * width / 4) + (bezierPointZ * width / 4);
             Vector3 debugPoint2 = debugPoint - (bezierPointX * width / 4) + (bezierPointZ * width / 4);
             Vector3 debugPoint3 = debugPoint + (bezierPointX * width / 4) - (bezierPointZ * width / 4);
             Vector3 debugPoint4 = debugPoint - (bezierPointX * width / 4) - (bezierPointZ * width / 4);
 
+            debugPoint.y -= 1000f; 
+            Vector3 debugPoint5 = debugPoint + (bezierPointX * width / 4) + (bezierPointZ * width / 4);
+            Vector3 debugPoint6 = debugPoint - (bezierPointX * width / 4) + (bezierPointZ * width / 4);
+            Vector3 debugPoint7 = debugPoint + (bezierPointX * width / 4) - (bezierPointZ * width / 4);
+            Vector3 debugPoint8 = debugPoint - (bezierPointX * width / 4) - (bezierPointZ * width / 4);
+
             verticesCol.Add(debugPoint1);
             verticesCol.Add(debugPoint2);
             verticesCol.Add(debugPoint3);
             verticesCol.Add(debugPoint4);
+            verticesCol.Add(debugPoint5);
+            verticesCol.Add(debugPoint6);
+            verticesCol.Add(debugPoint7);
+            verticesCol.Add(debugPoint8);
         }
     }
     private void OnDrawGizmos()
