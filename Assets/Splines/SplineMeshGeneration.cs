@@ -240,6 +240,8 @@ public class SplineMeshGeneration : MonoBehaviour
             tris.Add(tri7);
             tris.Add(tri3);
             tris.Add(tri6);
+
+            vCount += vpCount - vCount;
         }
         mesh.SetVertices(verts);
         mesh.SetTriangles(tris, 0);
