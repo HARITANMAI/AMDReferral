@@ -118,10 +118,6 @@ public class SplineMeshGeneration : MonoBehaviour
         mesh.RecalculateNormals();
 
         //SUPPORTS COLUMNS/PILLARS UNDER THE ROAD
-        List<Vector3> vertsPillar = new List<Vector3>();
-        List<int> trisPillar = new List<int>();
-        trisPillar.Clear();
-        vertsPillar.Clear();
         verticesCol.Clear();
 
         for (int i = 1; i < segments; i += 2)
@@ -130,6 +126,7 @@ public class SplineMeshGeneration : MonoBehaviour
 
             //Getting Bezier point and it's XYZ coords
             Vector3 bezierPoint = transform.InverseTransformPoint(container.EvaluatePosition(t));
+            bezierPoint.y -= 3f;
             Vector3 bezierPointZ = container.EvaluateTangent(t);
             Vector3 bezierPointY = container.EvaluateUpVector(t);
             Vector3 bezierPointX = Vector3.Cross(bezierPointY, bezierPointZ);
@@ -149,18 +146,20 @@ public class SplineMeshGeneration : MonoBehaviour
 
             //Raycasting to check until where the pillars should extend to
             Vector3 groundPoint = bezierPoint;
-            groundPoint.y -= 1000f;
 
-            //if (Physics.Raycast(bezierPoint, Vector3.down, out RaycastHit hit))
-            //{
-            //    groundPoint = hit.point;
-            //    Debug.Log($"The raycast hit at location: {groundPoint}");
+            if (Physics.Raycast(bezierPoint, Vector3.down, out RaycastHit hit))
+            {
+                groundPoint = transform.InverseTransformPoint(hit.point);
+                Debug.Log($"The raycast hit at location: {groundPoint}");
 
-            //}
-            //else
-            //{
-            //    Debug.Log($"The raycast did not hit anything");
-            //}
+            }
+            else
+            {
+                Debug.Log($"The raycast did not hit anything");
+            }
+
+            //Pillars will go downward instead of bending towards the world origin
+            groundPoint = new Vector3(bezierPoint.x, groundPoint.y - 10f, bezierPoint.z);
 
             //Four points that form a square at the ground point where the raycast hit
             Vector3 point5 = groundPoint + (bezierPointX * width / 4) + (bezierPointZ * width / 4);
@@ -175,13 +174,14 @@ public class SplineMeshGeneration : MonoBehaviour
 
             DebugPillarVertices(t, bezierPointX, bezierPointZ);
 
-            //Setting up triagnles to connect the verts to form a pillar
+            //Setting up triagnle indices to connect the verts to form a pillar mesh
             int vpCount = verts.Count;
             int tri0 = 0 + vCount;
             int tri1 = tri0 + 1;
             int tri2 = tri0 + 2;
             int tri3 = tri0 + 3;
 
+            //Bottom square indices
             int tri4 = tri0 + 4;
             int tri5 = tri0 + 5;
             int tri6 = tri0 + 6;
@@ -241,7 +241,7 @@ public class SplineMeshGeneration : MonoBehaviour
             tris.Add(tri3);
             tris.Add(tri6);
 
-            vCount += vpCount - vCount;
+            vCount += 8;
         }
         mesh.SetVertices(verts);
         mesh.SetTriangles(tris, 0);
@@ -257,11 +257,17 @@ public class SplineMeshGeneration : MonoBehaviour
         Vector3 debugPoint3 = debugPoint + (bezierPointX * width / 4) - (bezierPointZ * width / 4);
         Vector3 debugPoint4 = debugPoint - (bezierPointX * width / 4) - (bezierPointZ * width / 4);
 
-        debugPoint.y -= 1000f;
-        Vector3 debugPoint5 = debugPoint + (bezierPointX * width / 4) + (bezierPointZ * width / 4);
-        Vector3 debugPoint6 = debugPoint - (bezierPointX * width / 4) + (bezierPointZ * width / 4);
-        Vector3 debugPoint7 = debugPoint + (bezierPointX * width / 4) - (bezierPointZ * width / 4);
-        Vector3 debugPoint8 = debugPoint - (bezierPointX * width / 4) - (bezierPointZ * width / 4);
+        Vector3 groundDebugPoint = debugPoint;
+
+        if (Physics.Raycast(debugPoint, Vector3.down, out RaycastHit hit))
+        {
+            groundDebugPoint = hit.point;
+        }
+
+        Vector3 debugPoint5 = groundDebugPoint + (bezierPointX * width / 4) + (bezierPointZ * width / 4);
+        Vector3 debugPoint6 = groundDebugPoint - (bezierPointX * width / 4) + (bezierPointZ * width / 4);
+        Vector3 debugPoint7 = groundDebugPoint + (bezierPointX * width / 4) - (bezierPointZ * width / 4);
+        Vector3 debugPoint8 = groundDebugPoint - (bezierPointX * width / 4) - (bezierPointZ * width / 4);
 
         verticesCol.Add(debugPoint1);
         verticesCol.Add(debugPoint2);
