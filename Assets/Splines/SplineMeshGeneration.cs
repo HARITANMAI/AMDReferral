@@ -189,13 +189,13 @@ public class SplineMeshGeneration : MonoBehaviour
             int tri7 = 7;
 
             //Top Triangle
+            trisPillar.Add(tri1);
+            trisPillar.Add(tri2);
             trisPillar.Add(tri3);
-            trisPillar.Add(tri2);
-            trisPillar.Add(tri1);
 
-            trisPillar.Add(tri1);
-            trisPillar.Add(tri2);
             trisPillar.Add(tri0);
+            trisPillar.Add(tri2);
+            trisPillar.Add(tri1);
 
             //Bottom Triangle
             trisPillar.Add(tri7);
@@ -214,6 +214,24 @@ public class SplineMeshGeneration : MonoBehaviour
             trisPillar.Add(tri6);
             trisPillar.Add(tri2);
             trisPillar.Add(tri0);
+
+            //Left Triangle
+            trisPillar.Add(tri7);
+            trisPillar.Add(tri5);
+            trisPillar.Add(tri1);
+
+            trisPillar.Add(tri3);
+            trisPillar.Add(tri7);
+            trisPillar.Add(tri1);
+
+            //Front Triangle
+            trisPillar.Add(tri5);
+            trisPillar.Add(tri4);
+            trisPillar.Add(tri0);
+
+            trisPillar.Add(tri0);
+            trisPillar.Add(tri1);
+            trisPillar.Add(tri5);
 
 
             //trisPillar.AddRange(new List<int> {tri1, tri2, tri3, tri4, tri5, tri6, tri7,tri8});
