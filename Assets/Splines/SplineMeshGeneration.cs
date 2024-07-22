@@ -119,8 +119,11 @@ public class SplineMeshGeneration : MonoBehaviour
 
         //SUPPORTS COLUMNS/PILLARS UNDER THE ROAD
         List<Vector3> vertsPillar = new List<Vector3>();
+        List<int> trisPillar = new List<int>();
+        trisPillar.Clear();
         vertsPillar.Clear();
         verticesCol.Clear();
+
 
         for (int i = 1; i < segments; i += 2)
         {
@@ -132,12 +135,13 @@ public class SplineMeshGeneration : MonoBehaviour
             Vector3 bezierPointY = container.EvaluateUpVector(t);
             Vector3 bezierPointX = Vector3.Cross(bezierPointY, bezierPointZ);
             bezierPointX.Normalize();
+            bezierPointZ.Normalize();
 
             //Four points that form a square around the bezier point which is the center of each segement
-            Vector3 point1 = bezierPoint + (bezierPointX * width / 4) + (bezierPointY * width / 4);
-            Vector3 point2 = bezierPoint - (bezierPointX * width / 4) + (bezierPointY * width / 4);
-            Vector3 point3 = bezierPoint + (bezierPointX * width / 4) - (bezierPointY * width / 4);
-            Vector3 point4 = bezierPoint - (bezierPointX * width / 4) - (bezierPointY * width / 4);
+            Vector3 point1 = bezierPoint + (bezierPointX * width / 4) + (bezierPointZ * width / 4); //Top right
+            Vector3 point2 = bezierPoint - (bezierPointX * width / 4) + (bezierPointZ * width / 4); //Top left
+            Vector3 point3 = bezierPoint + (bezierPointX * width / 4) - (bezierPointZ * width / 4); //Bottom right
+            Vector3 point4 = bezierPoint - (bezierPointX * width / 4) - (bezierPointZ * width / 4); //Bottom left
 
             vertsPillar.Add(point1);
             vertsPillar.Add(point2);
@@ -145,49 +149,115 @@ public class SplineMeshGeneration : MonoBehaviour
             vertsPillar.Add(point4);
 
             //Raycasting to check until where the pillars should extend to
-            //Vector3 groundPoint = Vector3.zero;
-            //if(Physics.Raycast(bezierPoint, Vector3.down, out RaycastHit hit))
+            Vector3 groundPoint = bezierPoint;
+            groundPoint.y -= 1000f;
+
+            //if (Physics.Raycast(bezierPoint, Vector3.down, out RaycastHit hit))
             //{
             //    groundPoint = hit.point;
+            //    Debug.Log($"The raycast hit at location: {groundPoint}");
+
             //}
             //else
             //{
             //    Debug.Log($"The raycast did not hit anything");
             //}
 
-            //Vector3 point5 = groundPoint + (bezierPointX * width / 4) + (bezierPointZ * width / 4);
-            //Vector3 point6 = groundPoint - (bezierPointX * width / 4) + (bezierPointZ * width / 4);
-            //Vector3 point7 = groundPoint + (bezierPointX * width / 4) - (bezierPointZ * width / 4);
-            //Vector3 point8 = groundPoint - (bezierPointX * width / 4) - (bezierPointZ * width / 4);
+            //Four points that form a square at the ground point where the raycast hit
+            Vector3 point5 = groundPoint + (bezierPointX * width / 4) + (bezierPointZ * width / 4);
+            Vector3 point6 = groundPoint - (bezierPointX * width / 4) + (bezierPointZ * width / 4);
+            Vector3 point7 = groundPoint + (bezierPointX * width / 4) - (bezierPointZ * width / 4);
+            Vector3 point8 = groundPoint - (bezierPointX * width / 4) - (bezierPointZ * width / 4);
+
+            vertsPillar.Add(point5);
+            vertsPillar.Add(point6);
+            vertsPillar.Add(point7);
+            vertsPillar.Add(point8);
+
+            DebugPillarVertices(t, bezierPointX, bezierPointZ);
+
+            //Setting up triagnles to connect the verts to form a pillar
+            int vpCount = vertsPillar.Count;
+            int tri0 = 0;
+            int tri1 = 1;
+            int tri2 = 2;
+            int tri3 = 3;
+
+            int tri4 = 4;
+            int tri5 = 5;
+            int tri6 = 6;
+            int tri7 = 7;
+
+            //Top Triangle
+            trisPillar.Add(tri3);
+            trisPillar.Add(tri2);
+            trisPillar.Add(tri1);
+
+            trisPillar.Add(tri1);
+            trisPillar.Add(tri2);
+            trisPillar.Add(tri0);
+
+            //Bottom Triangle
+            trisPillar.Add(tri7);
+            trisPillar.Add(tri6);
+            trisPillar.Add(tri5);
+
+            trisPillar.Add(tri5);
+            trisPillar.Add(tri6);
+            trisPillar.Add(tri4);
+
+            //Right Triangle
+            trisPillar.Add(tri0);
+            trisPillar.Add(tri4);
+            trisPillar.Add(tri6);
+
+            trisPillar.Add(tri6);
+            trisPillar.Add(tri2);
+            trisPillar.Add(tri0);
 
 
-            //Gizmo Debug Vertices for visual representation
-            //Vector3 groundPoint = container.EvaluatePosition(t);
-            //bezierPointY.Normalize();
-            Vector3 debugPoint = container.EvaluatePosition(t);
-            bezierPointZ.Normalize();
-
-            Vector3 debugPoint1 = debugPoint + (bezierPointX * width / 4) + (bezierPointZ * width / 4);
-            Vector3 debugPoint2 = debugPoint - (bezierPointX * width / 4) + (bezierPointZ * width / 4);
-            Vector3 debugPoint3 = debugPoint + (bezierPointX * width / 4) - (bezierPointZ * width / 4);
-            Vector3 debugPoint4 = debugPoint - (bezierPointX * width / 4) - (bezierPointZ * width / 4);
-
-            debugPoint.y -= 1000f; 
-            Vector3 debugPoint5 = debugPoint + (bezierPointX * width / 4) + (bezierPointZ * width / 4);
-            Vector3 debugPoint6 = debugPoint - (bezierPointX * width / 4) + (bezierPointZ * width / 4);
-            Vector3 debugPoint7 = debugPoint + (bezierPointX * width / 4) - (bezierPointZ * width / 4);
-            Vector3 debugPoint8 = debugPoint - (bezierPointX * width / 4) - (bezierPointZ * width / 4);
-
-            verticesCol.Add(debugPoint1);
-            verticesCol.Add(debugPoint2);
-            verticesCol.Add(debugPoint3);
-            verticesCol.Add(debugPoint4);
-            verticesCol.Add(debugPoint5);
-            verticesCol.Add(debugPoint6);
-            verticesCol.Add(debugPoint7);
-            verticesCol.Add(debugPoint8);
+            //trisPillar.AddRange(new List<int> {tri1, tri2, tri3, tri4, tri5, tri6, tri7,tri8});
         }
+        mesh.SetVertices(vertsPillar);
+        mesh.SetTriangles(trisPillar, 0);
+        //mesh.RecalculateNormals();
+
+        //Setting up triangles
+        //List<int> trisPillar = new List<int>();
+        //int vpCount = vertsPillar.Count;
+        //for(int i  = 0; i < segments; i += 2)
+        //{
+
+        //}
     }
+
+    //Function for drawing gizmo spheres at the pillar's vertices
+    void DebugPillarVertices(float t, Vector3 bezierPointX, Vector3 bezierPointZ)
+    {
+        //Gizmo Debug Vertices for visual representation
+        Vector3 debugPoint = container.EvaluatePosition(t);
+        Vector3 debugPoint1 = debugPoint + (bezierPointX * width / 4) + (bezierPointZ * width / 4);
+        Vector3 debugPoint2 = debugPoint - (bezierPointX * width / 4) + (bezierPointZ * width / 4);
+        Vector3 debugPoint3 = debugPoint + (bezierPointX * width / 4) - (bezierPointZ * width / 4);
+        Vector3 debugPoint4 = debugPoint - (bezierPointX * width / 4) - (bezierPointZ * width / 4);
+
+        debugPoint.y -= 1000f;
+        Vector3 debugPoint5 = debugPoint + (bezierPointX * width / 4) + (bezierPointZ * width / 4);
+        Vector3 debugPoint6 = debugPoint - (bezierPointX * width / 4) + (bezierPointZ * width / 4);
+        Vector3 debugPoint7 = debugPoint + (bezierPointX * width / 4) - (bezierPointZ * width / 4);
+        Vector3 debugPoint8 = debugPoint - (bezierPointX * width / 4) - (bezierPointZ * width / 4);
+
+        verticesCol.Add(debugPoint1);
+        verticesCol.Add(debugPoint2);
+        verticesCol.Add(debugPoint3);
+        verticesCol.Add(debugPoint4);
+        verticesCol.Add(debugPoint5);
+        verticesCol.Add(debugPoint6);
+        verticesCol.Add(debugPoint7);
+        verticesCol.Add(debugPoint8);
+    }
+
+
     private void OnDrawGizmos()
     {
         //Display spline mesh vertices
