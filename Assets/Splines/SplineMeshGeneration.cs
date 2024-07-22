@@ -99,6 +99,7 @@ public class SplineMeshGeneration : MonoBehaviour
         int vCount = verts.Count;
         for(int i = 0; i < segments; i++)
         {
+            //Multiplying first vertex by 2 since 2 is the difference between the first vertex of adjacent segements
             int v0  = i * 2;
             int v1 = v0 + 1;
             int v2 = (v0 + 2) % vCount;
@@ -112,7 +113,6 @@ public class SplineMeshGeneration : MonoBehaviour
             tris.Add(v1);
             tris.Add(v3);
         }
-
         mesh.SetVertices(verts);
         mesh.SetTriangles(tris, 0);
         mesh.RecalculateNormals();
@@ -123,7 +123,6 @@ public class SplineMeshGeneration : MonoBehaviour
         trisPillar.Clear();
         vertsPillar.Clear();
         verticesCol.Clear();
-
 
         for (int i = 1; i < segments; i += 2)
         {
@@ -143,10 +142,10 @@ public class SplineMeshGeneration : MonoBehaviour
             Vector3 point3 = bezierPoint + (bezierPointX * width / 4) - (bezierPointZ * width / 4); //Bottom right
             Vector3 point4 = bezierPoint - (bezierPointX * width / 4) - (bezierPointZ * width / 4); //Bottom left
 
-            vertsPillar.Add(point1);
-            vertsPillar.Add(point2);
-            vertsPillar.Add(point3);
-            vertsPillar.Add(point4);
+            verts.Add(point1);
+            verts.Add(point2);
+            verts.Add(point3);
+            verts.Add(point4);
 
             //Raycasting to check until where the pillars should extend to
             Vector3 groundPoint = bezierPoint;
@@ -169,93 +168,81 @@ public class SplineMeshGeneration : MonoBehaviour
             Vector3 point7 = groundPoint + (bezierPointX * width / 4) - (bezierPointZ * width / 4);
             Vector3 point8 = groundPoint - (bezierPointX * width / 4) - (bezierPointZ * width / 4);
 
-            vertsPillar.Add(point5);
-            vertsPillar.Add(point6);
-            vertsPillar.Add(point7);
-            vertsPillar.Add(point8);
+            verts.Add(point5);
+            verts.Add(point6);
+            verts.Add(point7);
+            verts.Add(point8);
 
             DebugPillarVertices(t, bezierPointX, bezierPointZ);
 
             //Setting up triagnles to connect the verts to form a pillar
-            int vpCount = vertsPillar.Count;
-            int tri0 = 0;
-            int tri1 = 1;
-            int tri2 = 2;
-            int tri3 = 3;
+            int vpCount = verts.Count;
+            int tri0 = 0 + vCount;
+            int tri1 = tri0 + 1;
+            int tri2 = tri0 + 2;
+            int tri3 = tri0 + 3;
 
-            int tri4 = 4;
-            int tri5 = 5;
-            int tri6 = 6;
-            int tri7 = 7;
+            int tri4 = tri0 + 4;
+            int tri5 = tri0 + 5;
+            int tri6 = tri0 + 6;
+            int tri7 = tri0 + 7;
 
             //Top Triangle
-            trisPillar.Add(tri1);
-            trisPillar.Add(tri2);
-            trisPillar.Add(tri3);
+            tris.Add(tri1);
+            tris.Add(tri2);
+            tris.Add(tri3);
 
-            trisPillar.Add(tri0);
-            trisPillar.Add(tri2);
-            trisPillar.Add(tri1);
+            tris.Add(tri0);
+            tris.Add(tri2);
+            tris.Add(tri1);
 
             //Bottom Triangle
-            trisPillar.Add(tri7);
-            trisPillar.Add(tri6);
-            trisPillar.Add(tri5);
+            tris.Add(tri7);
+            tris.Add(tri6);
+            tris.Add(tri5);
 
-            trisPillar.Add(tri5);
-            trisPillar.Add(tri6);
-            trisPillar.Add(tri4);
+            tris.Add(tri5);
+            tris.Add(tri6);
+            tris.Add(tri4);
 
             //Right Triangle
-            trisPillar.Add(tri0);
-            trisPillar.Add(tri4);
-            trisPillar.Add(tri6);
+            tris.Add(tri0);
+            tris.Add(tri4);
+            tris.Add(tri6);
 
-            trisPillar.Add(tri6);
-            trisPillar.Add(tri2);
-            trisPillar.Add(tri0);
+            tris.Add(tri6);
+            tris.Add(tri2);
+            tris.Add(tri0);
 
             //Left Triangle
-            trisPillar.Add(tri7);
-            trisPillar.Add(tri5);
-            trisPillar.Add(tri1);
+            tris.Add(tri7);
+            tris.Add(tri5);
+            tris.Add(tri1);
 
-            trisPillar.Add(tri3);
-            trisPillar.Add(tri7);
-            trisPillar.Add(tri1);
+            tris.Add(tri3);
+            tris.Add(tri7);
+            tris.Add(tri1);
 
             //Front Triangle
-            trisPillar.Add(tri5);
-            trisPillar.Add(tri4);
-            trisPillar.Add(tri0);
+            tris.Add(tri5);
+            tris.Add(tri4);
+            tris.Add(tri0);
 
-            trisPillar.Add(tri0);
-            trisPillar.Add(tri1);
-            trisPillar.Add(tri5);
+            tris.Add(tri0);
+            tris.Add(tri1);
+            tris.Add(tri5);
 
             //Back Triangle
-            trisPillar.Add(tri6);
-            trisPillar.Add(tri3);
-            trisPillar.Add(tri2);
+            tris.Add(tri6);
+            tris.Add(tri3);
+            tris.Add(tri2);
 
-            trisPillar.Add(tri7);
-            trisPillar.Add(tri3);
-            trisPillar.Add(tri6);
-
-
-            //trisPillar.AddRange(new List<int> {tri1, tri2, tri3, tri4, tri5, tri6, tri7,tri8});
+            tris.Add(tri7);
+            tris.Add(tri3);
+            tris.Add(tri6);
         }
-        mesh.SetVertices(vertsPillar);
-        mesh.SetTriangles(trisPillar, 0);
-        //mesh.RecalculateNormals();
-
-        //Setting up triangles
-        //List<int> trisPillar = new List<int>();
-        //int vpCount = vertsPillar.Count;
-        //for(int i  = 0; i < segments; i += 2)
-        //{
-
-        //}
+        mesh.SetVertices(verts);
+        mesh.SetTriangles(tris, 0);
     }
 
     //Function for drawing gizmo spheres at the pillar's vertices
@@ -284,7 +271,6 @@ public class SplineMeshGeneration : MonoBehaviour
         verticesCol.Add(debugPoint8);
     }
 
-
     private void OnDrawGizmos()
     {
         //Display spline mesh vertices
@@ -301,7 +287,7 @@ public class SplineMeshGeneration : MonoBehaviour
             Gizmos.DrawSphere(verticesCol[i], 10f);
         }
 
-        //Display 't' value, segements, pillar position
+        //Display 't' value, segements, pillar positions
         for (int i = 0; i <= segments; i++)
         {
             float percent = i / (float)segments;
@@ -310,16 +296,12 @@ public class SplineMeshGeneration : MonoBehaviour
             Vector3 upVector = container.EvaluateUpVector(percent);
             Vector3 forwardVector = container.EvaluateTangent(percent);
             Vector3 rightVector = Vector3.Cross(upVector, forwardVector).normalized;
-
             //upVector.Normalize();
             //forwardVector.Normalize();
 
             Vector3 leftPos = position - (rightVector * width);
             Vector3 rightPos = position + (rightVector * width);
 
-            //Gizmos.color = Color.blue;
-            //Gizmos.DrawSphere(leftPos, 10f);
-            //Gizmos.DrawSphere(rightPos, 10f);
             Gizmos.color = Color.white;
             Gizmos.DrawLine(leftPos, rightPos);
 
