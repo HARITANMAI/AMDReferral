@@ -233,6 +233,15 @@ public class SplineMeshGeneration : MonoBehaviour
             trisPillar.Add(tri1);
             trisPillar.Add(tri5);
 
+            //Back Triangle
+            trisPillar.Add(tri6);
+            trisPillar.Add(tri3);
+            trisPillar.Add(tri2);
+
+            trisPillar.Add(tri7);
+            trisPillar.Add(tri3);
+            trisPillar.Add(tri6);
+
 
             //trisPillar.AddRange(new List<int> {tri1, tri2, tri3, tri4, tri5, tri6, tri7,tri8});
         }
