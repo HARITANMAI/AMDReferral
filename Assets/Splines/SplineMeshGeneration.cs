@@ -102,6 +102,7 @@ public class SplineMeshGeneration : MonoBehaviour
             //Multiplying first vertex by 2 since 2 is the difference between the first vertex of adjacent segements
             int v0  = i * 2;
             int v1 = v0 + 1;
+            // % ensures the value doesn't cross the maximum available vertices
             int v2 = (v0 + 2) % vCount;
             int v3 = (v0 + 3) % vCount;
 
@@ -119,17 +120,19 @@ public class SplineMeshGeneration : MonoBehaviour
 
         //SUPPORTS COLUMNS/PILLARS UNDER THE ROAD
         verticesCol.Clear();
-
         for (int i = 1; i < segments; i += 2)
         {
             float t = i / (float)(segments);
 
-            //Getting Bezier point and it's XYZ coords
+            //Getting Bezier point and it's XYZ coords and reducing the y to make it not overlap the road mesh
             Vector3 bezierPoint = transform.InverseTransformPoint(container.EvaluatePosition(t));
-            bezierPoint.y -= 3f;
+            bezierPoint.y -= 4f;
+
             Vector3 bezierPointZ = container.EvaluateTangent(t);
             Vector3 bezierPointY = container.EvaluateUpVector(t);
             Vector3 bezierPointX = Vector3.Cross(bezierPointY, bezierPointZ);
+
+            //X and Z needs to be normalized to give accurate mesh vertex coordinates
             bezierPointX.Normalize();
             bezierPointZ.Normalize();
 
@@ -145,9 +148,10 @@ public class SplineMeshGeneration : MonoBehaviour
             verts.Add(point4);
 
             //Raycasting to check until where the pillars should extend to
+            Vector3 castPoint = container.EvaluatePosition(t);
             Vector3 groundPoint = bezierPoint;
 
-            if (Physics.Raycast(bezierPoint, Vector3.down, out RaycastHit hit))
+            if (Physics.Raycast(castPoint, Vector3.down, out RaycastHit hit))
             {
                 groundPoint = transform.InverseTransformPoint(hit.point);
                 Debug.Log($"The raycast hit at location: {groundPoint}");
@@ -175,7 +179,7 @@ public class SplineMeshGeneration : MonoBehaviour
             DebugPillarVertices(t, bezierPointX, bezierPointZ);
 
             //Setting up triagnle indices to connect the verts to form a pillar mesh
-            int vpCount = verts.Count;
+            //These new tri indices needs to be set at vertices that come after the road mesh
             int tri0 = 0 + vCount;
             int tri1 = tri0 + 1;
             int tri2 = tri0 + 2;
@@ -241,6 +245,7 @@ public class SplineMeshGeneration : MonoBehaviour
             tris.Add(tri3);
             tris.Add(tri6);
 
+            //8 vertices per pillar are being added every iteration to the max vertex count
             vCount += 8;
         }
         mesh.SetVertices(verts);
