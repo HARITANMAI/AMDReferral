@@ -11,13 +11,15 @@ using UnityEngine.Splines;
 public class SplineMeshGeneration : MonoBehaviour
 {
     [SerializeField] SplineContainer container;
-    [SerializeField, Range(1, 64)] private int segments;
+    [SerializeField, Range(1, 100)] private int segments;
     [SerializeField, Range(0, 1)] private float t;
     [SerializeField, Range(2, 200f)] float width;
     Mesh mesh;
     float3 position;
     float3 tangent;
     float3 upVector;
+
+    //Lists to draw gizmos
     List<Vector3> vertices = new List<Vector3>();
     List<Vector3> verticesCol = new List<Vector3>();
 
@@ -68,7 +70,7 @@ public class SplineMeshGeneration : MonoBehaviour
             float t = i/(float)segments;
 
             //Used InverseTransformPoint to fix the bug where verts were being set in the world space
-            Vector3 bezierPoint = transform.InverseTransformPoint(container.EvaluatePosition(t));
+            Vector3 bezierPoint = transform.InverseTransformPoint(container.EvaluatePosition(t)); //I'm calling the point on the curve at value 't' as bezier point throughout the code
 
             //Getting the XYZ Orientation
             Vector3 bezierPointY = container.EvaluateUpVector(t);
@@ -76,7 +78,7 @@ public class SplineMeshGeneration : MonoBehaviour
             Vector3 bezierPointX = Vector3.Cross(bezierPointY, bezierPointZ);
             bezierPointX.Normalize();
 
-            //Calculating the vertex in local space from the point on the curve
+            //Calculating the vertices in local space from the point on the curve
             Vector3 point1 = bezierPoint + (bezierPointX * width);
             Vector3 point2 = bezierPoint - (bezierPointX * width);
 
@@ -92,19 +94,20 @@ public class SplineMeshGeneration : MonoBehaviour
             vertices.Add(point4);
         }
 
-        //Debug.Log($"VERTICES COUNT BEFORE TRIANGLE: {verts.Count}");
 
         //Setting up triangles
         List<int> tris = new List<int>();
         int vCount = verts.Count;
         for(int i = 0; i < segments; i++)
         {
-            //Multiplying first vertex by 2 since 2 is the difference between the first vertex of adjacent segements
+            //Multiplying first vertex by 2 since difference between the first vertex of adjacent segements is 2
             int v0  = i * 2;
             int v1 = v0 + 1;
+            int v2 = v0 + 2;
+            int v3 = v0 + 3;
             // % ensures the value doesn't cross the maximum available vertices
-            int v2 = (v0 + 2) % vCount;
-            int v3 = (v0 + 3) % vCount;
+            //int v2 = (v0 + 2) % vCount;
+            //int v3 = (v0 + 3) % vCount;
 
             tris.Add(v3);
             tris.Add(v2);
@@ -124,7 +127,7 @@ public class SplineMeshGeneration : MonoBehaviour
         {
             float t = i / (float)(segments);
 
-            //Getting Bezier point and it's XYZ coords and reducing the y to make it not overlap the road mesh
+            //Getting Bezier point, it's XYZ coords and reducing the y to make it not overlap the road mesh
             Vector3 bezierPoint = transform.InverseTransformPoint(container.EvaluatePosition(t));
             bezierPoint.y -= 4f;
 
@@ -154,8 +157,7 @@ public class SplineMeshGeneration : MonoBehaviour
             if (Physics.Raycast(castPoint, Vector3.down, out RaycastHit hit))
             {
                 groundPoint = transform.InverseTransformPoint(hit.point);
-                Debug.Log($"The raycast hit at location: {groundPoint}");
-
+                //Debug.Log($"The raycast hit at location: {groundPoint}");
             }
             else
             {
@@ -179,7 +181,7 @@ public class SplineMeshGeneration : MonoBehaviour
             DebugPillarVertices(t, bezierPointX, bezierPointZ);
 
             //Setting up triagnle indices to connect the verts to form a pillar mesh
-            //These new tri indices needs to be set at vertices that come after the road mesh
+            //These new tri indices needs to be set at vertices that come after the road mesh so we add the total vert count to the 1st index
             int tri0 = 0 + vCount;
             int tri1 = tri0 + 1;
             int tri2 = tri0 + 2;
@@ -250,6 +252,9 @@ public class SplineMeshGeneration : MonoBehaviour
         }
         mesh.SetVertices(verts);
         mesh.SetTriangles(tris, 0);
+
+        Debug.Log($"VERTICES COUNT: {verts.Count}");
+        Debug.Log($"TRI-INDICES COUNT: {tris.Count}");
     }
 
     //Function for drawing gizmo spheres at the pillar's vertices
@@ -309,8 +314,6 @@ public class SplineMeshGeneration : MonoBehaviour
             Vector3 upVector = container.EvaluateUpVector(percent);
             Vector3 forwardVector = container.EvaluateTangent(percent);
             Vector3 rightVector = Vector3.Cross(upVector, forwardVector).normalized;
-            //upVector.Normalize();
-            //forwardVector.Normalize();
 
             Vector3 leftPos = position - (rightVector * width);
             Vector3 rightPos = position + (rightVector * width);
@@ -318,13 +321,17 @@ public class SplineMeshGeneration : MonoBehaviour
             Gizmos.color = Color.white;
             Gizmos.DrawLine(leftPos, rightPos);
 
-            Vector3 calcPos = position;
-            calcPos.y = -100;
-            Gizmos.DrawLine(position, calcPos);
+            //Draws line on every alternate segment
+            if( i % 2 != 0)
+            {
+                Vector3 calcPos = position;
+                calcPos.y = -100;
+                Gizmos.DrawLine(position, calcPos);
+            }
         }
 
         Gizmos.color = Color.red;
-        Gizmos.DrawSphere(position, 10f);
+        Gizmos.DrawSphere(position, 20f);
         Gizmos.color = Color.white;
     }
 }
