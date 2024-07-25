@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -253,8 +254,8 @@ public class SplineMeshGeneration : MonoBehaviour
         mesh.SetVertices(verts);
         mesh.SetTriangles(tris, 0);
 
-        Debug.Log($"VERTICES COUNT: {verts.Count}");
-        Debug.Log($"TRI-INDICES COUNT: {tris.Count}");
+        //Debug.Log($"VERTICES COUNT: {verts.Count}");
+        //Debug.Log($"TRI-INDICES COUNT: {tris.Count}");
     }
 
     //Function for drawing gizmo spheres at the pillar's vertices
@@ -333,5 +334,29 @@ public class SplineMeshGeneration : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(position, 20f);
         Gizmos.color = Color.white;
+    }
+
+
+    [CustomEditor(typeof(SplineMeshGeneration)), CanEditMultipleObjects]
+    public class SplineMeshGenerationEditor : Editor
+    {
+        private void OnSceneGUI()
+        {
+            SplineMeshGeneration spline = (SplineMeshGeneration)target;
+            EditorGUI.BeginChangeCheck();
+
+
+            Vector3 newSegementCount = Handles.PositionHandle(spline.transform.position + new Vector3(0 , 150,0), spline.transform.rotation);
+            newSegementCount += spline.transform.position;
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(spline, $"Changed segements of {spline.gameObject.name}");
+                int newSegments = (int)((newSegementCount - spline.transform.position).x)/ 10;
+
+                Debug.Log($"spline.segements: {newSegments}");
+                spline.segments = newSegments;
+            }
+        }
     }
 }
