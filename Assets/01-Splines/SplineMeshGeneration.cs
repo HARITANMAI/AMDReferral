@@ -345,17 +345,22 @@ public class SplineMeshGeneration : MonoBehaviour
             SplineMeshGeneration spline = (SplineMeshGeneration)target;
             EditorGUI.BeginChangeCheck();
 
+            //X Axis for segements, Y Axis for width
+            Vector3 handlePos = spline.transform.position + new Vector3(spline.segments, spline.width + 150, 0);
 
-            Vector3 newSegementCount = Handles.PositionHandle(spline.transform.position + new Vector3(0 , 150,0), spline.transform.rotation);
-            newSegementCount += spline.transform.position;
+            handlePos = Handles.PositionHandle(handlePos, spline.transform.rotation);
+            //Vector3 newSegementCount = Handles.PositionHandle(spline.transform.position + new Vector3(0, 150,0), spline.transform.rotation);
 
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(spline, $"Changed segements of {spline.gameObject.name}");
-                int newSegments = (int)((newSegementCount - spline.transform.position).x)/ 10;
-
-                Debug.Log($"spline.segements: {newSegments}");
+                int newSegments = Mathf.Clamp(Mathf.RoundToInt(handlePos.x - spline.transform.position.x), 1, 100);
                 spline.segments = newSegments;
+                Debug.Log($"spline.segements: {newSegments}");
+
+                float newWidth = Mathf.Clamp(handlePos.y - spline.transform.position.y, 1f, 200f);
+                spline.width = newWidth;
+                Debug.Log($"spline.width: {newSegments}");
             }
         }
     }
