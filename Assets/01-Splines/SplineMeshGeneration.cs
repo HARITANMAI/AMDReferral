@@ -16,9 +16,14 @@ public class SplineMeshGeneration : MonoBehaviour
     [SerializeField, Range(0, 1)] private float t;
     [SerializeField, Range(2, 200f)] float width;
     Mesh mesh;
-    float3 position;
-    float3 tangent;
-    float3 upVector;
+
+    [SerializeField, Range(0.01f, 10f)] float animSpeed;
+    [SerializeField] GameObject animObj;
+    public bool startAnimation = false;
+
+    private float3 position;
+    private float3 tangent;
+    private float3 upVector;
 
     //Lists to draw gizmos
     List<Vector3> vertices = new List<Vector3>();
@@ -48,11 +53,19 @@ public class SplineMeshGeneration : MonoBehaviour
         GenerateMesh();
     }
 
-
     private void Update()
     {
         container.Evaluate(t, out position, out tangent, out upVector);
         GenerateMesh();
+
+        if (startAnimation)
+        {
+            t += (0.01f * animSpeed);
+            t %= 1f;
+            container.Evaluate(t, out position, out tangent, out upVector);
+            animObj.transform.position = position;
+            animObj.transform.rotation = Quaternion.LookRotation(tangent, upVector);
+        }
     }
 
     void GenerateMesh()
@@ -346,22 +359,26 @@ public class SplineMeshGeneration : MonoBehaviour
             EditorGUI.BeginChangeCheck();
 
             //X Axis for segements, Y Axis for width
-            Vector3 handlePos = spline.transform.position + new Vector3(spline.segments, spline.width + 150, 0);
-
+            Vector3 handlePos = spline.transform.position + new Vector3(spline.segments, spline.width, spline.animSpeed);
             handlePos = Handles.PositionHandle(handlePos, spline.transform.rotation);
-            //Vector3 newSegementCount = Handles.PositionHandle(spline.transform.position + new Vector3(0, 150,0), spline.transform.rotation);
 
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(spline, $"Changed segements of {spline.gameObject.name}");
                 int newSegments = Mathf.Clamp(Mathf.RoundToInt(handlePos.x - spline.transform.position.x), 1, 100);
                 spline.segments = newSegments;
-                Debug.Log($"spline.segements: {newSegments}");
 
                 float newWidth = Mathf.Clamp(handlePos.y - spline.transform.position.y, 1f, 200f);
                 spline.width = newWidth;
-                Debug.Log($"spline.width: {newSegments}");
+
+                float newSpeed = Mathf.Clamp(handlePos.z - spline.transform.position.z, 0.01f, 10f);
+                spline.animSpeed = newSpeed;
+
+                spline.GenerateMesh();
             }
+
+            Handles.color = Color.white;
+            Handles.DrawLine(spline.transform.position, handlePos);
         }
     }
 }
