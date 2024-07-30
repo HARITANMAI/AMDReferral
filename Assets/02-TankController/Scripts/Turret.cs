@@ -16,6 +16,7 @@ public class Turret : MonoBehaviour
 
 	private void Awake()
 	{
+
 	}
 
 	public void Init(TankSO inData)

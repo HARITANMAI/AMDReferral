@@ -22,16 +22,29 @@ public class CameraController : MonoBehaviour
 
 	public void RotateSpringArm(Vector2 change)
 	{
+		//Storing the local rotation of spring arm to change it based on the input
+		Vector3 angle = m_SpringArmTarget.localEulerAngles;
 
+		//Changing pitch and yaw/ X and Y axes
+		angle.x -= change.y * m_PitchSensitivity;
+		angle.y += change.x * m_YawSensitivity;
+
+		//Assigning the new rotation to the spring arm's rotation
+		m_SpringArmTarget.localEulerAngles = angle;
 	}
 
 	public void ChangeCameraDistance(float amount)
 	{
+		//Gets input from the mouse wheel and changes it based on the zoom sensitivity
+		m_CameraDist += amount * m_ZoomSensitivity;
 
+		//Ensuring the camera zoom is within the limits
+		m_CameraDist = Mathf.Clamp(m_CameraDist, m_MinDist, m_MaxDist);
 	}
 
 	private void LateUpdate()
 	{
-
+		//Offsetting the camera mount based on the camera mounts forward axis multiplied by the camera distance
+		m_CameraMount.position = m_SpringArmTarget.position - m_CameraMount.forward * m_CameraDist;
 	}
 }
