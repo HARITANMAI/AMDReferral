@@ -16,16 +16,17 @@ public class Suspension : MonoBehaviour
 
 	public void Init(SuspensionSO inData)
 	{
-		
+		m_Data = inData;
 	}
 
 	public bool GetGrounded()
 	{
-		return false;
+
+		return m_Grounded;
 	}
 
 	private void FixedUpdate()
 	{
-		
+		//Hook's Law
 	}
 }

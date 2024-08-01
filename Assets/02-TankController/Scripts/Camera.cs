@@ -25,9 +25,12 @@ public class CameraController : MonoBehaviour
 		//Storing the local rotation of spring arm to change it based on the input
 		Vector3 angle = m_SpringArmTarget.localEulerAngles;
 
-		//Changing pitch and yaw/ X and Y axes
+		//Changing pitch and yaw/ X and Y axes. X axes rotation controls up and down while Y does left and right.
 		angle.x -= change.y * m_PitchSensitivity;
 		angle.y += change.x * m_YawSensitivity;
+
+		//Clamping in X axis to visually clamp the Y axis camera movement in gameplay 
+		angle.x = Mathf.Clamp(angle.x, 0, 90);
 
 		//Assigning the new rotation to the spring arm's rotation
 		m_SpringArmTarget.localEulerAngles = angle;

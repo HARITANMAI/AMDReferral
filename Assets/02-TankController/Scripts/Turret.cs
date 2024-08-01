@@ -16,21 +16,50 @@ public class Turret : MonoBehaviour
 
 	private void Awake()
 	{
-
+		m_RotationDirty = false;
 	}
 
 	public void Init(TankSO inData)
 	{
-		
+		m_Data = inData;
 	}
 
 	public void SetRotationDirty()
 	{
-		
-	}
+		//This function gets called on mouse's input and starts the aimign coroutine if it hasn't been started already
+		if(m_CRAimingTurret == null)
+        {
+            m_RotationDirty = true;
+            m_CRAimingTurret = StartCoroutine(C_AimTurret());
+		}
+    }
 
 	private IEnumerator C_AimTurret()
 	{
-		yield return null;
+		Debug.Log("The Aim Turret coroutine started.");
+		while (m_RotationDirty)
+		{
+			//Projecting the camera's forward vector onto the plane of turret to remove its Y axis and constrain its rotation to horizontal movement
+			Vector3 projectedVec = Vector3.ProjectOnPlane(m_CameraMount.forward, m_Turret.up);
+
+			//Making a quaternion that follows in the direction of inputted vector
+			Quaternion targetRot = Quaternion.LookRotation(projectedVec);
+
+			//Rotating the turret towards the target rotation 
+			m_Turret.rotation = Quaternion.Slerp(m_Turret.rotation, targetRot, m_Data.TurretData.TurretTraverseSpeed * Time.deltaTime);
+
+            Debug.DrawLine(transform.position, transform.position + projectedVec * 20f, Color.red);
+
+			//Checking if the current rotation reaches target rotation to stop the coroutine
+            if (Quaternion.Angle(m_Turret.rotation, targetRot) <= 0.2f)
+			{
+				m_RotationDirty = false;
+				StopCoroutine(C_AimTurret());
+				m_CRAimingTurret = null;
+				yield break;
+			}
+
+			yield return null;
+		}
 	}
 }

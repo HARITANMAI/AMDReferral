@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 2129.8782, g: 1557.0901, b: 1284.0587, a: 1}
+  m_IndirectSpecularColor: {r: 1590.3928, g: 1785.8713, b: 2209.5823, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1070,13 +1070,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 577714981}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.62, z: -0.64}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.9199998, z: -0.64}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 114474679}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 928874463}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &604312205
 GameObject:
@@ -1539,7 +1539,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 90
+  field of view: 65
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -2135,7 +2135,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SpringArmTarget: {fileID: 577714982}
   m_CameraMount: {fileID: 114474679}
-  m_Camera: {fileID: 0}
+  m_Camera: {fileID: 880163267}
   m_YawSensitivity: 0.5
   m_PitchSensitivity: 0.5
   m_ZoomSensitivity: 2.5
@@ -2175,6 +2175,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 577714982}
   - {fileID: 2525816904378909889}
   - {fileID: 1013742092}
   - {fileID: 55085257}
@@ -3985,7 +3986,6 @@ SceneRoots:
   - {fileID: 255864980}
   - {fileID: 1032749535}
   - {fileID: 928874463}
-  - {fileID: 577714982}
   - {fileID: 122966975}
   - {fileID: 970418847}
   - {fileID: 115009025}
