@@ -17,16 +17,33 @@ public class Suspension : MonoBehaviour
 	public void Init(SuspensionSO inData)
 	{
 		m_Data = inData;
+		m_Grounded = false;
 	}
 
 	public bool GetGrounded()
 	{
-
-		return m_Grounded;
+		//Raycasting towards the -Y axis of the wheel by the length of the spring
+		if (Physics.Raycast(m_Wheel.position, m_Wheel.up * -1, 1f))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	private void FixedUpdate()
 	{
-		//Hook's Law
-	}
+		//Invoking the public event only when the grounded status of the wheel changes
+		bool m_newGrounded = GetGrounded();
+
+        if (m_newGrounded != m_Grounded)
+		{
+			m_Grounded = m_newGrounded;
+            OnGroundedChanged?.Invoke(m_Grounded);
+			//Debug.Log("newGrounded if statement is working");
+        }
+        //Hook's Law for the suspension
+    }
 }

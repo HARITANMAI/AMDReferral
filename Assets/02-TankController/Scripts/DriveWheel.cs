@@ -12,8 +12,8 @@ public class DriveWheel : MonoBehaviour
 	[SerializeField] private Suspension[] m_SuspensionWheels;
 	private int m_NumGroundedWheels;
 	private bool m_Grounded;
-
 	private float m_Acceleration;
+
 	public void SetAcceleration(float amount)
 	{
 		m_Acceleration = amount;
@@ -33,23 +33,30 @@ public class DriveWheel : MonoBehaviour
 	//Handle_WheelGroundChanged is the function which gets called by invoking the OnGroundChanged event through the Suspension script
 	private void Handle_WheelGroundedChanged(bool newGrounded)
 	{
-		//Add or remove number of wheels
-		if (newGrounded)
+        //Add or remove number of wheels
+        if (newGrounded == true)
 		{
-			m_NumGroundedWheels++;
+            m_NumGroundedWheels++;
+            Debug.Log($"Handle_WheelGroundedChanged added: {m_NumGroundedWheels}");
+
+            m_Grounded = true;
 		}
-		if(!newGrounded)
+		else
 		{
-			m_NumGroundedWheels--;
-		}
-	}
+            m_NumGroundedWheels--;
+            Debug.Log($"Handle_WheelGroundedChanged subtracted: {m_NumGroundedWheels}");
+        }
+
+        //Update the tank's grounded status
+    }
 
 	private void FixedUpdate()
 	{
-		if(m_Grounded)
+        m_RB.AddForce(gameObject.transform.parent.forward * m_Acceleration * 8f, ForceMode.Acceleration);
+
+        if (m_Grounded)
 		{
 			//MOVE LOGIC
-            m_RB.AddForce(gameObject.transform.parent.forward * m_Acceleration * 10f, ForceMode.Acceleration);
         }
     }
 }

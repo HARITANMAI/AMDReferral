@@ -36,22 +36,22 @@ public class Turret : MonoBehaviour
 
 	private IEnumerator C_AimTurret()
 	{
-		Debug.Log("The Aim Turret coroutine started.");
+		//Debug.Log("The Aim Turret coroutine started.");
 		while (m_RotationDirty)
 		{
 			//Projecting the camera's forward vector onto the plane of turret to remove its Y axis and constrain its rotation to horizontal movement
-			Vector3 projectedVec = Vector3.ProjectOnPlane(m_CameraMount.forward, m_Turret.up);
+			Vector3 projectedVec = Vector3.ProjectOnPlane(m_CameraMount.forward, transform.up);
 
-			//Making a quaternion that follows in the direction of inputted vector
-			Quaternion targetRot = Quaternion.LookRotation(projectedVec);
+			//Making a quaternion that follows in the direction of inputted vector while rotating along with the tank's main body
+			Quaternion targetRot = Quaternion.LookRotation(projectedVec, transform.up);
 
-			//Rotating the turret towards the target rotation 
-			m_Turret.rotation = Quaternion.Slerp(m_Turret.rotation, targetRot, m_Data.TurretData.TurretTraverseSpeed * Time.deltaTime);
+			//Rotating the turret towards the target rotation using 'RotateTowards' to have constant rotation speed
+			m_Turret.rotation = Quaternion.RotateTowards(m_Turret.rotation, targetRot, Time.fixedDeltaTime * m_Data.TurretData.TurretTraverseSpeed);
 
             Debug.DrawLine(transform.position, transform.position + projectedVec * 20f, Color.red);
 
-			//Checking if the current rotation reaches target rotation to stop the coroutine
-            if (Quaternion.Angle(m_Turret.rotation, targetRot) <= 0.2f)
+			//Checking if the current rotation reaches near target rotation to stop the coroutine
+            if (Quaternion.Angle(m_Turret.rotation, targetRot) <= 0.1f)
 			{
 				m_RotationDirty = false;
 				StopCoroutine(C_AimTurret());
