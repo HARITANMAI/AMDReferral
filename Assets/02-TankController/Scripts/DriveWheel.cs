@@ -46,35 +46,40 @@ public class DriveWheel : MonoBehaviour
         }
 
         //Update the tank's grounded status
+        if (m_NumGroundedWheels > 0)
+        {
+            m_Grounded = true;
+        }
+        else
+        {
+            m_Grounded = false;
+        }
     }
 
 	private void FixedUpdate()
 	{
-		if (m_NumGroundedWheels > 0)
-		{
-			m_Grounded = true;
-		}
-		else 
-		{
-			m_Grounded = false;
-		}
-
 		if (m_Grounded)
 		{
-			Debug.Log("m_Grounded in FixedUpdate is true");
             float traction = m_NumGroundedWheels / m_SuspensionWheels.Length;
             float force = m_Acceleration * traction;
+            float speed = Vector3.Dot(m_RB.velocity, transform.forward);
+            //Debug.Log($"Current speed is: {speed}");
 
-            foreach (Suspension wheel in m_SuspensionWheels)
-            {
-                if (wheel.GetGrounded() == true)
+            if (speed < 10.56f)
+			{
+                foreach (Suspension wheel in m_SuspensionWheels)
                 {
-					Vector3 wheelForce = (wheel.transform.forward * force) /  m_NumGroundedWheels;
-                    m_RB.AddForceAtPosition(wheelForce, wheel.transform.position, ForceMode.Acceleration);
+                    if (wheel.GetGrounded() == true)
+                    {
+                        Vector3 wheelForce = (wheel.transform.forward * force) / m_NumGroundedWheels;
+                        m_RB.AddForceAtPosition(wheelForce, wheel.transform.position, ForceMode.Acceleration);
+                    }
                 }
             }
-
-            //m_RB.AddForce(force * gameObject.transform.parent.forward * 8f, ForceMode.Acceleration);
+            else
+            {
+                m_RB.velocity = transform.forward * 10.56f;
+            }
         }
     }
 }
