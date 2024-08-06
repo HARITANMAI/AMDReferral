@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31834b5dc9411e740900ed47a988cd8a, type: 3}
   m_Name: Tiger131_Engine
   m_EditorClassIdentifier: 
-  HorsePower: 0
+  HorsePower: 650

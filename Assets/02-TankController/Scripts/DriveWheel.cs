@@ -16,7 +16,7 @@ public class DriveWheel : MonoBehaviour
 
 	public void SetAcceleration(float amount)
 	{
-		m_Acceleration = amount;
+		m_Acceleration = amount * (float)(m_Data.EngineData.HorsePower/56.5);
 	}
 
 	public void Init(TankSO inData)
@@ -38,8 +38,6 @@ public class DriveWheel : MonoBehaviour
 		{
             m_NumGroundedWheels++;
             Debug.Log($"Handle_WheelGroundedChanged added: {m_NumGroundedWheels}");
-
-            m_Grounded = true;
 		}
 		else
 		{
@@ -52,11 +50,31 @@ public class DriveWheel : MonoBehaviour
 
 	private void FixedUpdate()
 	{
-        m_RB.AddForce(gameObject.transform.parent.forward * m_Acceleration * 8f, ForceMode.Acceleration);
-
-        if (m_Grounded)
+		if (m_NumGroundedWheels > 0)
 		{
-			//MOVE LOGIC
+			m_Grounded = true;
+		}
+		else 
+		{
+			m_Grounded = false;
+		}
+
+		if (m_Grounded)
+		{
+			Debug.Log("m_Grounded in FixedUpdate is true");
+            float traction = m_NumGroundedWheels / m_SuspensionWheels.Length;
+            float force = m_Acceleration * traction;
+
+            foreach (Suspension wheel in m_SuspensionWheels)
+            {
+                if (wheel.GetGrounded() == true)
+                {
+					Vector3 wheelForce = (wheel.transform.forward * force) /  m_NumGroundedWheels;
+                    m_RB.AddForceAtPosition(wheelForce, wheel.transform.position, ForceMode.Acceleration);
+                }
+            }
+
+            //m_RB.AddForce(force * gameObject.transform.parent.forward * 8f, ForceMode.Acceleration);
         }
     }
 }
