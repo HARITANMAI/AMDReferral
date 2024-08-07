@@ -23,10 +23,12 @@ public class DriveWheel : MonoBehaviour
         float mass = (float)(m_Data.Mass_Tons * 1000);
 
         //Clamping Velocity
-        float velocity = Mathf.Clamp(m_RB.velocity.magnitude, 1f, m_Data.Max_Speed);
+        //float velocity = Mathf.Max(m_RB.velocity.magnitude, 1f);
+        float velocity = 1f;
 
         //(Accel = Force / Mass) -> (Accel = Power / (Mass * Velocity))
         m_Acceleration = amount * (power / (mass * velocity));
+        //Debug.Log($"Accerlation is: {m_Acceleration}");
 	}
 
 	public void Init(TankSO inData)
@@ -56,24 +58,20 @@ public class DriveWheel : MonoBehaviour
         }
 
         //Update the tank's grounded status
-        if (m_NumGroundedWheels > 0)
-        {
-            m_Grounded = true;
-        }
-        else
-        {
-            m_Grounded = false;
-        }
+        m_Grounded = m_NumGroundedWheels > 0;
     }
 
     private void FixedUpdate()
     {
         if (m_Grounded)
         {
+            float speed = Vector3.Dot(m_RB.velocity, transform.forward);
+            float speed2 = m_RB.velocity.magnitude;
+            Debug.Log($"Tank velocity in forward: {speed}");
+            //Debug.Log($"Overall tank's velocity: {speed2}");
+
             float traction = m_NumGroundedWheels / m_SuspensionWheels.Length;
             float force = m_Acceleration * traction;
-            float speed = Vector3.Dot(m_RB.velocity, transform.forward);
-            Debug.Log($"Current speed is: {speed}");
 
             if (speed < m_Data.Max_Speed && speed > -m_Data.Max_Speed)
 			{
@@ -87,6 +85,7 @@ public class DriveWheel : MonoBehaviour
                     }
                 }
             }
+
         }
     }
 }
