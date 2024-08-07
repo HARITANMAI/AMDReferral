@@ -75,7 +75,7 @@ public class DriveWheel : MonoBehaviour
             float speed = Vector3.Dot(m_RB.velocity, transform.forward);
             Debug.Log($"Current speed is: {speed}");
 
-            if (speed < m_Data.Max_Speed)
+            if (speed < m_Data.Max_Speed && speed > -m_Data.Max_Speed)
 			{
                 foreach (Suspension wheel in m_SuspensionWheels)
                 {
@@ -86,10 +86,6 @@ public class DriveWheel : MonoBehaviour
                         m_RB.AddForceAtPosition(wheelForce, wheel.transform.position, ForceMode.Acceleration);
                     }
                 }
-            }
-            else
-            {
-                m_RB.velocity = transform.forward * 10.56f;
             }
         }
     }
