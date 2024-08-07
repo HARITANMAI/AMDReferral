@@ -12,4 +12,5 @@ public class TankSO : ScriptableObject
 	public SuspensionSO SuspensionData;
 	public float Health;
 	public float Mass_Tons;
+	public float Max_Speed;
 }

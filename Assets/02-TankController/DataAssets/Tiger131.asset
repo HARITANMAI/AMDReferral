@@ -18,4 +18,5 @@ MonoBehaviour:
   EngineData: {fileID: 11400000, guid: 34fb3e173e7f5c6449c4cb7f5bfcd551, type: 2}
   SuspensionData: {fileID: 11400000, guid: d9c378956b68bec4288742cfa6b8d87a, type: 2}
   Health: 0
-  Mass_Tons: 0
+  Mass_Tons: 56.6
+  Max_Speed: 10.56
