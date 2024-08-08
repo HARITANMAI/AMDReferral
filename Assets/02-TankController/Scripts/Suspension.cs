@@ -12,33 +12,27 @@ public class Suspension : MonoBehaviour
 
 	private SuspensionSO m_Data;
 	private float m_SpringSize;
-	private Vector3 m_SuspensionForce;
 	private bool m_Grounded;
 
-	public float minLength;
-	public float maxLength;
-	private float restLength;
+	private float minLength;
+	private float maxLength;
+	private float springLength;
+	private float lastLength;
 
     public void Init(SuspensionSO inData)
 	{
 		m_Data = inData;
 		m_Grounded = false;
-		Debug.Log("The init in suspesion script is runninThe init in suspesion script is runninThe init in suspesion script " +
-			"is runninThe init in suspesion script is runninThe init in suspesion script is runninThe init in suspesion script is running");
+
+		minLength = m_Data.RestLength - m_Data.SpringTravel;
+		maxLength = m_Data.RestLength + m_Data.SpringTravel;
 	}
 
 	public bool GetGrounded()
 	{
 		//Raycasting towards the -Y axis of the wheel by the length of the spring
-		if (Physics.Raycast(m_Wheel.position, m_Wheel.up * -1f, 1f))
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
+		return Physics.Raycast(m_Wheel.position, -m_Wheel.up, m_Data.WheelDiameter/2);
+    }
 
 	private void FixedUpdate()
 	{
@@ -51,47 +45,35 @@ public class Suspension : MonoBehaviour
             OnGroundedChanged?.Invoke(m_Grounded);
         }
 
-		WheelSuspension();
+        WheelSuspension();
     }
 
 	void WheelSuspension()
 	{
-        if (Physics.Raycast(m_Wheel.transform.position, -m_Wheel.up, out RaycastHit hit, m_SpringSize + (m_Data.WheelDiameter / 2)))
+        if (Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, maxLength))
         {
-			float springLength = hit.distance - (m_Data.WheelDiameter / 2);
+            lastLength = springLength;
+            springLength = hit.distance;
+            springLength = Mathf.Clamp(springLength, minLength, maxLength);
 
-			float springForce = m_Data.SuspensionStrength * (restLength - springLength);
+            float springVelocity = (lastLength - springLength) / Time.fixedDeltaTime;
 
-			m_SuspensionForce = springForce * m_Wheel.transform.up;
+            float springForce = m_Data.SuspensionStrength * (m_Data.RestLength - springLength);		//F = K * X
+            float damperForce = m_Data.SuspensionDamper * springVelocity;
 
-			m_RB.AddForceAtPosition(m_SuspensionForce, hit.point);
+            Vector3 m_SuspensionForce = (springForce + damperForce) * m_Wheel.transform.up;
+
+            m_RB.AddForceAtPosition(m_SuspensionForce, hit.point);
+			m_Wheel.transform.localPosition = transform.up * springLength;
+
+			Debug.Log($"Spring Length is: {springLength}");
+			Debug.Log($"Spring Strength is: {springForce}");
+            Debug.Log($"Damper Strength is: {damperForce}");
         }
     }
 
-    void TankSuspension()
+    private void OnDrawGizmos()
     {
-        //Tank Suspension
-        Vector3 SpringOffsetDirection = -m_Wheel.up;
-
-        //Coverting from local to world
-        Vector3 localDir = transform.InverseTransformDirection(SpringOffsetDirection);
-
-        Vector3 worldVel = m_RB.GetPointVelocity(m_Wheel.transform.position);
-
-        //Finding vector from this location to spring base position
-        Vector3 springVec = transform.position - transform.parent.position;
-
-        m_SpringSize = 0.8f;
-        //Difference bw initial spring length and the current spring length
-        float susOffset = m_SpringSize - Vector3.Dot(springVec, localDir);
-
-        float susVel = Vector3.Dot(localDir, worldVel);
-
-        float susforce = (susOffset * 5f) - (susVel * 2f);
-
-        m_RB.AddForceAtPosition(localDir * (susforce / m_RB.mass), m_Wheel.transform.position);
-        //m_RB.AddForce(localDir * (susforce / m_RB.mass))
-
-        //transform.localPosition = -susOffset * transform.position;
+		Gizmos.DrawSphere(m_Wheel.transform.position, 0.3f);
     }
 }

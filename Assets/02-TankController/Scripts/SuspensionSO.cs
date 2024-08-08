@@ -6,6 +6,8 @@ using UnityEngine;
 public class SuspensionSO : ScriptableObject
 {
 	public float WheelDiameter;
+	public float RestLength;
+	public float SpringTravel;
 	public float SuspensionDamper;
 	public float SuspensionStrength;
 	public LayerMask SuspensionLayermask;

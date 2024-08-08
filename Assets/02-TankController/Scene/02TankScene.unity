@@ -1440,8 +1440,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Wheel: {fileID: 1017359242}
   m_RB: {fileID: 928874466}
-  minLength: 0
-  maxLength: 0
 --- !u!1 &698860408
 GameObject:
   m_ObjectHideFlags: 0
@@ -3008,8 +3006,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Wheel: {fileID: 388173715}
   m_RB: {fileID: 928874466}
-  minLength: 0
-  maxLength: 0
 --- !u!1 &1152831822
 GameObject:
   m_ObjectHideFlags: 0
@@ -3267,8 +3263,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Wheel: {fileID: 1325602300}
   m_RB: {fileID: 928874466}
-  minLength: 0
-  maxLength: 0
 --- !u!1 &1235931972
 GameObject:
   m_ObjectHideFlags: 0
@@ -3809,8 +3803,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Wheel: {fileID: 604312206}
   m_RB: {fileID: 928874466}
-  minLength: 0
-  maxLength: 0
 --- !u!1 &1692009104
 GameObject:
   m_ObjectHideFlags: 0
@@ -3910,8 +3902,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Wheel: {fileID: 1803464509}
   m_RB: {fileID: 928874466}
-  minLength: 0
-  maxLength: 0
 --- !u!1 &1803464508
 GameObject:
   m_ObjectHideFlags: 0
@@ -4042,8 +4032,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Wheel: {fileID: 1282588305}
   m_RB: {fileID: 928874466}
-  minLength: 0
-  maxLength: 0
 --- !u!1 &1896376904
 GameObject:
   m_ObjectHideFlags: 0

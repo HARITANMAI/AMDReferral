@@ -20,15 +20,13 @@ public class DriveWheel : MonoBehaviour
         // Power = HorsePower * 745.7 or Power = Force * Velocity, Converting HorsePower into Power
         float power = m_Data.EngineData.HorsePower * 745.7f;
 
-        //(Weight = Mass * Gravity) -> (Mass = Weight / Gravity)
+        //'Weight = Mass * Gravity' ------> 'Mass = Weight / Gravity'
         float mass = (float)(m_Data.Mass_Tons * 1000);
 
-        //Clamping Velocity
-        float velocity = Mathf.Max(m_RB.velocity.magnitude, 1f);
+        //Using constant Velocity to have stable acceleration
+        float velocity = 1f;
 
-        //float velocity = 1f;
-
-        //(Accel = Force / Mass) -> (Accel = Power / (Mass * Velocity))
+        //'Acceleration = Force / Mass' -------> 'Acceleration = Power / (Mass * Velocity)'
         m_Acceleration = amount * (power / (mass * velocity));
         //Debug.Log($"Accerlation is: {m_Acceleration}");
 	}
@@ -40,10 +38,10 @@ public class DriveWheel : MonoBehaviour
 		foreach(Suspension wheel in m_SuspensionWheels)
 		{
             wheel.Init(m_SusData); 
-            //The suspension's event gets invoked in the suspension script and passes a boolean value into this function
             wheel.OnGroundedChanged += Handle_WheelGroundedChanged;
-		}
-	}
+            //The suspension's event gets invoked in the suspension script and passes a boolean value into this function
+        }
+    }
 
 	//Handle_WheelGroundChanged is the function which gets called by invoking the OnGroundChanged event through the Suspension script
 	private void Handle_WheelGroundedChanged(bool newGrounded)
@@ -52,12 +50,12 @@ public class DriveWheel : MonoBehaviour
         if (newGrounded == true)
 		{
             m_NumGroundedWheels++;
-            Debug.Log($"Handle_WheelGroundedChanged added: {m_NumGroundedWheels}");
+            //Debug.Log($"Handle_WheelGroundedChanged added: {m_NumGroundedWheels}");
 		}
 		else
 		{
             m_NumGroundedWheels--;
-            Debug.Log($"Handle_WheelGroundedChanged subtracted: {m_NumGroundedWheels}");
+            //Debug.Log($"Handle_WheelGroundedChanged subtracted: {m_NumGroundedWheels}");
         }
 
         //Update the tank's grounded status
@@ -70,7 +68,7 @@ public class DriveWheel : MonoBehaviour
         {
             float speed = Vector3.Dot(m_RB.velocity, transform.forward);
             float speed2 = m_RB.velocity.magnitude;
-            //Debug.Log($"Tank velocity in forward: {speed}");
+            Debug.Log($"Tank velocity in forward: {speed}");
             //Debug.Log($"Overall tank's velocity: {speed2}");
 
             float traction = m_NumGroundedWheels / m_SuspensionWheels.Length;

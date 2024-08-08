@@ -30,7 +30,7 @@ public class Turret : MonoBehaviour
 		if(m_CRAimingTurret == null)
         {
             m_RotationDirty = true;
-            m_CRAimingTurret = StartCoroutine(C_AimTurret());
+            //m_CRAimingTurret = StartCoroutine(C_AimTurret());
 		}
     }
 
