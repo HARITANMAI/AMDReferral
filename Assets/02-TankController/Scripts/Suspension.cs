@@ -12,12 +12,19 @@ public class Suspension : MonoBehaviour
 
 	private SuspensionSO m_Data;
 	private float m_SpringSize;
+	private Vector3 m_SuspensionForce;
 	private bool m_Grounded;
 
-	public void Init(SuspensionSO inData)
+	public float minLength;
+	public float maxLength;
+	private float restLength;
+
+    public void Init(SuspensionSO inData)
 	{
 		m_Data = inData;
 		m_Grounded = false;
+		Debug.Log("The init in suspesion script is runninThe init in suspesion script is runninThe init in suspesion script " +
+			"is runninThe init in suspesion script is runninThe init in suspesion script is runninThe init in suspesion script is running");
 	}
 
 	public bool GetGrounded()
@@ -44,32 +51,47 @@ public class Suspension : MonoBehaviour
             OnGroundedChanged?.Invoke(m_Grounded);
         }
 
-		if (m_newGrounded) 
-		{
-            //Tank Suspension
-            Vector3 SpringOffsetDirection = Vector3.down;
+		WheelSuspension();
+    }
 
-            //Coverting from local to world
-            Vector3 localDir = transform.InverseTransformDirection(SpringOffsetDirection);
+	void WheelSuspension()
+	{
+        if (Physics.Raycast(m_Wheel.transform.position, -m_Wheel.up, out RaycastHit hit, m_SpringSize + (m_Data.WheelDiameter / 2)))
+        {
+			float springLength = hit.distance - (m_Data.WheelDiameter / 2);
 
-            Vector3 worldVel = m_RB.GetPointVelocity(transform.position);
+			float springForce = m_Data.SuspensionStrength * (restLength - springLength);
 
-            //Finding vector from this location to spring base position
-            Vector3 springVec = transform.position - transform.parent.position;
+			m_SuspensionForce = springForce * m_Wheel.transform.up;
 
-            m_SpringSize = 1f;
-            //Difference bw initial spring length and the current spring length
-            float susOffset = m_SpringSize - Vector3.Dot(springVec, localDir);
-
-            float susVel = Vector3.Dot(localDir, worldVel);
-
-            float susforce = (susOffset * 5f) - (susVel * 2f);
-
-
-            m_RB.AddForceAtPosition(localDir * (susforce / m_RB.mass), m_Wheel.transform.position);
-            //m_RB.AddForce(localDir * (susforce / m_RB.mass));
-
-            //transform.localPosition = -susOffset * transform.position;
+			m_RB.AddForceAtPosition(m_SuspensionForce, hit.point);
         }
+    }
+
+    void TankSuspension()
+    {
+        //Tank Suspension
+        Vector3 SpringOffsetDirection = -m_Wheel.up;
+
+        //Coverting from local to world
+        Vector3 localDir = transform.InverseTransformDirection(SpringOffsetDirection);
+
+        Vector3 worldVel = m_RB.GetPointVelocity(m_Wheel.transform.position);
+
+        //Finding vector from this location to spring base position
+        Vector3 springVec = transform.position - transform.parent.position;
+
+        m_SpringSize = 0.8f;
+        //Difference bw initial spring length and the current spring length
+        float susOffset = m_SpringSize - Vector3.Dot(springVec, localDir);
+
+        float susVel = Vector3.Dot(localDir, worldVel);
+
+        float susforce = (susOffset * 5f) - (susVel * 2f);
+
+        m_RB.AddForceAtPosition(localDir * (susforce / m_RB.mass), m_Wheel.transform.position);
+        //m_RB.AddForce(localDir * (susforce / m_RB.mass))
+
+        //transform.localPosition = -susOffset * transform.position;
     }
 }

@@ -9,7 +9,8 @@ public class DriveWheel : MonoBehaviour
 
 	[SerializeField] private Rigidbody m_RB;
 	[SerializeField] private TankSO m_Data;
-	[SerializeField] private Suspension[] m_SuspensionWheels;
+    [SerializeField] private SuspensionSO m_SusData;
+    [SerializeField] private Suspension[] m_SuspensionWheels;
 	private int m_NumGroundedWheels;
 	private bool m_Grounded;
 	private float m_Acceleration;
@@ -23,8 +24,9 @@ public class DriveWheel : MonoBehaviour
         float mass = (float)(m_Data.Mass_Tons * 1000);
 
         //Clamping Velocity
-        //float velocity = Mathf.Max(m_RB.velocity.magnitude, 1f);
-        float velocity = 1f;
+        float velocity = Mathf.Max(m_RB.velocity.magnitude, 1f);
+
+        //float velocity = 1f;
 
         //(Accel = Force / Mass) -> (Accel = Power / (Mass * Velocity))
         m_Acceleration = amount * (power / (mass * velocity));
@@ -37,8 +39,9 @@ public class DriveWheel : MonoBehaviour
 		m_NumGroundedWheels = 0;
 		foreach(Suspension wheel in m_SuspensionWheels)
 		{
-			//The suspension's event gets invoked in the suspension script and passes a boolean value into this function
-			wheel.OnGroundedChanged += Handle_WheelGroundedChanged;
+            wheel.Init(m_SusData); 
+            //The suspension's event gets invoked in the suspension script and passes a boolean value into this function
+            wheel.OnGroundedChanged += Handle_WheelGroundedChanged;
 		}
 	}
 
@@ -67,7 +70,7 @@ public class DriveWheel : MonoBehaviour
         {
             float speed = Vector3.Dot(m_RB.velocity, transform.forward);
             float speed2 = m_RB.velocity.magnitude;
-            Debug.Log($"Tank velocity in forward: {speed}");
+            //Debug.Log($"Tank velocity in forward: {speed}");
             //Debug.Log($"Overall tank's velocity: {speed2}");
 
             float traction = m_NumGroundedWheels / m_SuspensionWheels.Length;

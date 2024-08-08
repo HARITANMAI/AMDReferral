@@ -37,6 +37,7 @@ public class TankController : MonoBehaviour
 			wheel.Init(m_Data);
 			wheel.OnGroundedChanged += Handle_SuspensionGroundedChanged;
 		}
+
 		m_TurretController.Init(m_Data);
 	}
 
