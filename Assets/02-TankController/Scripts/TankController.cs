@@ -111,11 +111,8 @@ public class TankController : MonoBehaviour
 	{
 		while (m_IsSteering)
 		{
-			Quaternion rotationRate = Quaternion.Euler(0f, m_InSteer * Time.fixedDeltaTime * 6f, 0f);
+			Quaternion rotationRate = Quaternion.Euler(0f, m_InSteer * Time.fixedDeltaTime * 10f, 0f);
 			m_RB.MoveRotation(m_RB.rotation * rotationRate);
-
-			//Torque method
-			//m_RB.AddTorque(transform.up * m_InSteer * 5f, ForceMode.Acceleration);
 
 			yield return null;
 		}

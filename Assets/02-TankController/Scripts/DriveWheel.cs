@@ -83,10 +83,17 @@ public class DriveWheel : MonoBehaviour
                         //Getting force per wheel
                         Vector3 wheelForce = (wheel.transform.forward * force) / m_NumGroundedWheels;
                         m_RB.AddForceAtPosition(wheelForce, wheel.transform.position, ForceMode.Acceleration);
+                        
+                        //Fixing the tank drift bug at high speeds
+                        //Getting the velocity of the each wheel
+                        Vector3 velocity = m_RB.GetPointVelocity(wheel.transform.position) / m_NumGroundedWheels;
+                        Vector3 lateralVelocity = Vector3.ProjectOnPlane(velocity, wheel.transform.forward);
+
+                        //Applying opposite lateral movement force to the tank
+                        m_RB.AddForceAtPosition(-lateralVelocity * 0.35f, wheel.transform.position, ForceMode.Acceleration);
                     }
                 }
             }
-
         }
     }
 }
