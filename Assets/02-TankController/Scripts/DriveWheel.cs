@@ -92,6 +92,13 @@ public class DriveWheel : MonoBehaviour
                         //Applying opposite lateral movement force to the tank
                         m_RB.AddForceAtPosition(-lateralVelocity * 0.35f, wheel.transform.position, ForceMode.Acceleration);
                     }
+
+                    //Preventing the tank to slowly move after releasing input
+                    if(force == 0)
+                    {
+                        //Applies force in the opposite direction of tank's movement, making it break
+                        m_RB.AddForce(-m_RB.velocity * 0.5f);
+                    }
                 }
             }
         }
