@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Tiger131_Suspension
   m_EditorClassIdentifier: 
   WheelDiameter: 2
-  RestLength: 0.4
+  RestLength: 0.45
   SpringTravel: 0.75
   SuspensionDamper: 2
-  SuspensionStrength: 5
+  SuspensionStrength: 4
   SuspensionLayermask:
     serializedVersion: 2
     m_Bits: 1

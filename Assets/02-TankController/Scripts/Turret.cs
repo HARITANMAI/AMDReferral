@@ -14,6 +14,8 @@ public class Turret : MonoBehaviour
 	private bool m_RotationDirty;
 	private Coroutine m_CRAimingTurret;
 
+	public float m_TurretAimDirection;
+
 	private void Awake()
 	{
 		m_RotationDirty = false;
@@ -48,7 +50,10 @@ public class Turret : MonoBehaviour
 			//Rotating the turret towards the target rotation using 'RotateTowards' to have constant rotation speed
 			m_Turret.rotation = Quaternion.RotateTowards(m_Turret.rotation, targetRot, Time.fixedDeltaTime * m_Data.TurretData.TurretTraverseSpeed);
 
-			//Checking if the current rotation reaches near target rotation to stop the coroutine
+			//For UI purposes
+            m_TurretAimDirection = m_Turret.rotation.eulerAngles.y;
+
+            //Checking if the current rotation reaches near target rotation to stop the coroutine
             if (Quaternion.Angle(m_Turret.rotation, targetRot) <= 0.1f)
 			{
 				m_RotationDirty = false;
@@ -56,6 +61,8 @@ public class Turret : MonoBehaviour
 				m_CRAimingTurret = null;
 				yield break;
 			}
+
+
 
 			yield return null;
 		}

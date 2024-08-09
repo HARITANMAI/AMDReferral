@@ -12,7 +12,7 @@ public class Barrel : MonoBehaviour
 	private int m_SelectedShell;
 
 	private float m_CurrentDispersion;
-	private bool m_CanFire;
+	public bool m_CanFire;
 
 	public void Init(TankSO inData)
 	{

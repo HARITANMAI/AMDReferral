@@ -19,4 +19,4 @@ MonoBehaviour:
   SuspensionData: {fileID: 11400000, guid: d9c378956b68bec4288742cfa6b8d87a, type: 2}
   Health: 0
   Mass_Tons: 56.6
-  Max_Speed: 10.56
+  Max_Speed: 11.56

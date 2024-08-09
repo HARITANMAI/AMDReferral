@@ -26,7 +26,8 @@ public class TankController : MonoBehaviour
 	private bool m_IsFiring;
 	private Coroutine m_CRFire;
 
-	private void Awake()
+
+    private void Awake()
 	{
 		m_ActionMap = new AM_02Tank();
 		m_RB = GetComponent<Rigidbody>();
@@ -128,7 +129,9 @@ public class TankController : MonoBehaviour
 		m_IsFiring = true;
 
 		m_BarrelController.Fire();
+		//ui_ReloadStatus.text = "Reload Status:" + m_BarrelController.m_CanFire.ToString();
 	}
+
 	private void Handle_FireCanceled(InputAction.CallbackContext context)
 	{
 		if (!m_IsFiring) return;
