@@ -66,9 +66,9 @@ public class Suspension : MonoBehaviour
             m_RB.AddForceAtPosition(m_SuspensionForce, hit.point);
 			m_Wheel.transform.localPosition = transform.up * springLength;
 
-			Debug.Log($"Spring Length is: {springLength}");
-			Debug.Log($"Spring Strength is: {springForce}");
-            Debug.Log($"Damper Strength is: {damperForce}");
+			//Debug.Log($"Spring Length is: {springLength}");
+			//Debug.Log($"Spring Strength is: {springForce}");
+   //         Debug.Log($"Damper Strength is: {damperForce}");
         }
     }
 }

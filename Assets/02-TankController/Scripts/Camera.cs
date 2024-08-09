@@ -20,7 +20,7 @@ public class CameraController : MonoBehaviour
 	[SerializeField] private float m_CameraProbeSize;
 	[SerializeField] private Vector3 m_TargetOffset;
 
-	public void RotateSpringArm(Vector2 change)
+    public void RotateSpringArm(Vector2 change)
 	{
 		//Storing the local rotation of spring arm to change it based on the input
 		Vector3 angle = m_SpringArmTarget.localEulerAngles;
@@ -34,9 +34,9 @@ public class CameraController : MonoBehaviour
 
 		//Assigning the new rotation to the spring arm's rotation
 		m_SpringArmTarget.localEulerAngles = angle;
-	}
+    }
 
-	public void ChangeCameraDistance(float amount)
+    public void ChangeCameraDistance(float amount)
 	{
 		//Gets input from the mouse wheel and changes it based on the zoom sensitivity
 		m_CameraDist += amount * m_ZoomSensitivity;

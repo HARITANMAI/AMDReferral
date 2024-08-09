@@ -26,7 +26,7 @@ public class DriveWheel : MonoBehaviour
         //Using constant Velocity to have stable acceleration
         float velocity = 2f;
 
-        //'Acceleration = Force / Mass' -------> 'Acceleration = Power / (Mass * Velocity)'
+        //'Acceleration = Force / Mass' ------> 'Acceleration = Power / (Mass * Velocity)'
         m_Acceleration = amount * (power / (mass * velocity));
         //Debug.Log($"Accerlation is: {m_Acceleration}");
 	}
@@ -67,8 +67,8 @@ public class DriveWheel : MonoBehaviour
         if (m_Grounded)
         {
             float speed = Vector3.Dot(m_RB.velocity, transform.forward);
+            //Debug.Log($"Tank velocity in forward: {speed}");
             float speed2 = m_RB.velocity.magnitude;
-            Debug.Log($"Tank velocity in forward: {speed}");
             //Debug.Log($"Overall tank's velocity: {speed2}");
 
             float traction = m_NumGroundedWheels / m_SuspensionWheels.Length;
@@ -84,7 +84,6 @@ public class DriveWheel : MonoBehaviour
                         Vector3 wheelForce = (wheel.transform.forward * force) / m_NumGroundedWheels;
                         m_RB.AddForceAtPosition(wheelForce, wheel.transform.position, ForceMode.Acceleration);
                         
-                        //Fixing the tank drift bug at high speeds
                         //Getting the velocity of the each wheel
                         Vector3 velocity = m_RB.GetPointVelocity(wheel.transform.position) / m_NumGroundedWheels;
                         Vector3 lateralVelocity = Vector3.ProjectOnPlane(velocity, wheel.transform.forward);

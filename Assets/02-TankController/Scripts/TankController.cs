@@ -12,6 +12,7 @@ public class TankController : MonoBehaviour
 	[SerializeField] private TankSO m_Data;
 	[SerializeField] private Rigidbody m_RB;
 	[SerializeField] private CameraController m_CameraController;
+	[SerializeField] private Barrel m_BarrelController;
 	[SerializeField] private Turret m_TurretController;
 	[SerializeField] private DriveWheel[] m_DriveWheels;
 	private int m_NumSuspensionsGrounded;
@@ -30,6 +31,7 @@ public class TankController : MonoBehaviour
 		m_ActionMap = new AM_02Tank();
 		m_RB = GetComponent<Rigidbody>();
 		m_CameraController = GetComponent<CameraController>();
+		m_BarrelController = GetComponent<Barrel>();
 		m_TurretController = GetComponent<Turret>();
 		m_NumSuspensionsGrounded = 0;
 		foreach (DriveWheel wheel in m_DriveWheels)
@@ -39,6 +41,7 @@ public class TankController : MonoBehaviour
 		}
 
 		m_TurretController.Init(m_Data);
+		m_BarrelController.Init(m_Data);
 	}
 
 	private void OnEnable()
@@ -124,22 +127,13 @@ public class TankController : MonoBehaviour
 
 		m_IsFiring = true;
 
-		m_CRFire = StartCoroutine(C_FireUpdate());
+		m_BarrelController.Fire();
 	}
 	private void Handle_FireCanceled(InputAction.CallbackContext context)
 	{
 		if (!m_IsFiring) return;
 
 		m_IsFiring = false;
-
-		StopCoroutine(m_CRFire);
-	}
-	private IEnumerator C_FireUpdate()
-	{
-		while (m_IsFiring)
-		{
-			yield return null;
-		}
 	}
 
 	private void Handle_AimPerformed(InputAction.CallbackContext context)

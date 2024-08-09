@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Tiger131_APShell
   m_EditorClassIdentifier: 
   Damage: 0
-  Velocity: 0
+  Velocity: 70

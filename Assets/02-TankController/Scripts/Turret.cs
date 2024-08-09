@@ -48,8 +48,6 @@ public class Turret : MonoBehaviour
 			//Rotating the turret towards the target rotation using 'RotateTowards' to have constant rotation speed
 			m_Turret.rotation = Quaternion.RotateTowards(m_Turret.rotation, targetRot, Time.fixedDeltaTime * m_Data.TurretData.TurretTraverseSpeed);
 
-            Debug.DrawLine(transform.position, transform.position + projectedVec * 20f, Color.red);
-
 			//Checking if the current rotation reaches near target rotation to stop the coroutine
             if (Quaternion.Angle(m_Turret.rotation, targetRot) <= 0.1f)
 			{
