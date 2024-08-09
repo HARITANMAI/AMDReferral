@@ -19,7 +19,6 @@ public class Barrel : MonoBehaviour
 
 	public void Fire()
 	{
-
+		//gameObject.Instantiate(m_ShellPreab);
 	}
-
 }

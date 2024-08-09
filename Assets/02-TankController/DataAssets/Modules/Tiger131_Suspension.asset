@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   WheelDiameter: 2
   RestLength: 0.4
-  SpringTravel: 0.7
+  SpringTravel: 0.75
   SuspensionDamper: 2
   SuspensionStrength: 5
   SuspensionLayermask:

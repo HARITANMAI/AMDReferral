@@ -24,7 +24,7 @@ public class DriveWheel : MonoBehaviour
         float mass = (float)(m_Data.Mass_Tons * 1000);
 
         //Using constant Velocity to have stable acceleration
-        float velocity = 1f;
+        float velocity = 2f;
 
         //'Acceleration = Force / Mass' -------> 'Acceleration = Power / (Mass * Velocity)'
         m_Acceleration = amount * (power / (mass * velocity));
@@ -89,16 +89,15 @@ public class DriveWheel : MonoBehaviour
                         Vector3 velocity = m_RB.GetPointVelocity(wheel.transform.position) / m_NumGroundedWheels;
                         Vector3 lateralVelocity = Vector3.ProjectOnPlane(velocity, wheel.transform.forward);
 
-                        //Applying opposite lateral movement force to the tank
-                        m_RB.AddForceAtPosition(-lateralVelocity * 0.35f, wheel.transform.position, ForceMode.Acceleration);
+                        //Applying opposite lateral movement force to the tank to reduce drifting
+                        m_RB.AddForceAtPosition(-lateralVelocity * 0.5f, wheel.transform.position, ForceMode.Acceleration);
                     }
                 }
             }
 
-            //Preventing the tank to slowly move after releasing input by brake logic
             if (force == 0)
             {
-                //Applies force in the opposite direction of tank's movement, making it break
+                //Applies force in the opposite direction of tank's movement, making it break when theres no input
                 m_RB.AddForce(-m_RB.velocity * 0.5f);
             }
         }

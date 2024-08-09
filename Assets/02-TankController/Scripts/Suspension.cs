@@ -71,9 +71,4 @@ public class Suspension : MonoBehaviour
             Debug.Log($"Damper Strength is: {damperForce}");
         }
     }
-
-    private void OnDrawGizmos()
-    {
-		Gizmos.DrawSphere(m_Wheel.transform.position, 0.3f);
-    }
 }
