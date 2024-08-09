@@ -58,7 +58,7 @@ public class Suspension : MonoBehaviour
 
             float springVelocity = (lastLength - springLength) / Time.fixedDeltaTime;
 
-            float springForce = m_Data.SuspensionStrength * (m_Data.RestLength - springLength);		//F = K * X
+            float springForce = m_Data.SuspensionStrength * (m_Data.RestLength - springLength);	//F = K * X
             float damperForce = m_Data.SuspensionDamper * springVelocity;
 
             Vector3 m_SuspensionForce = (springForce + damperForce) * m_Wheel.transform.up;
