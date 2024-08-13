@@ -12,6 +12,7 @@ public class Shell : MonoBehaviour
     }
     private void FixedUpdate()
     {
+        //Just adding a little bit more force to make projectile slightly realistic
         m_RB.AddForce(-gameObject.transform.up * 9.8f);
     }
 }

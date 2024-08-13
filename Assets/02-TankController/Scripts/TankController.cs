@@ -58,6 +58,7 @@ public class TankController : MonoBehaviour
 		m_ActionMap.Default.Aim.performed += Handle_AimPerformed;
 		m_ActionMap.Default.Zoom.performed += Handle_ZoomPerformed;
 	}
+
 	private void OnDisable()
 	{
 		m_ActionMap.Disable();
@@ -129,7 +130,6 @@ public class TankController : MonoBehaviour
 		m_IsFiring = true;
 
 		m_BarrelController.Fire();
-		//ui_ReloadStatus.text = "Reload Status:" + m_BarrelController.m_CanFire.ToString();
 	}
 
 	private void Handle_FireCanceled(InputAction.CallbackContext context)

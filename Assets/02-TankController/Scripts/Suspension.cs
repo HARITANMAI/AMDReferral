@@ -68,7 +68,7 @@ public class Suspension : MonoBehaviour
 
 			//Debug.Log($"Spring Length is: {springLength}");
 			//Debug.Log($"Spring Strength is: {springForce}");
-   //         Debug.Log($"Damper Strength is: {damperForce}");
+			//Debug.Log($"Damper Strength is: {damperForce}");
         }
     }
 }

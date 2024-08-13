@@ -68,8 +68,6 @@ public class DriveWheel : MonoBehaviour
         {
             float speed = Vector3.Dot(m_RB.velocity, transform.forward);
             //Debug.Log($"Tank velocity in forward: {speed}");
-            float speed2 = m_RB.velocity.magnitude;
-            //Debug.Log($"Overall tank's velocity: {speed2}");
 
             float traction = m_NumGroundedWheels / m_SuspensionWheels.Length;
             float force = m_Acceleration * traction;
@@ -94,6 +92,7 @@ public class DriveWheel : MonoBehaviour
                 }
             }
 
+            //Force will be 0 when there is no input
             if (force == 0)
             {
                 //Applies force in the opposite direction of tank's movement, making it break when theres no input

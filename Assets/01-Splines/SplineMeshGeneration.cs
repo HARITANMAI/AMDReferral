@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -134,15 +135,26 @@ public class SplineMeshGeneration : MonoBehaviour
         mesh.SetVertices(verts);
         mesh.SetTriangles(tris, 0);
         mesh.RecalculateNormals();
+        verticesCol.Clear();
 
         //SUPPORTS COLUMNS/PILLARS UNDER THE ROAD
-        verticesCol.Clear();
+        Vector3 pillarOrigin = transform.InverseTransformPoint(container.EvaluatePosition(t));
+        GeneratePillar(pillarOrigin, verts, tris, vCount);
+
+
+        //Debug.Log($"VERTICES COUNT: {verts.Count}");
+        //Debug.Log($"TRI-INDICES COUNT: {tris.Count}");
+    }
+
+
+    void GeneratePillar(Vector3 bezierPoint, List<Vector3> verts, List<int> tris, int vCount)
+    {
         for (int i = 1; i < segments; i += 2)
         {
             float t = i / (float)(segments);
 
             //Getting Bezier point, it's XYZ coords and reducing the y to make it not overlap the road mesh
-            Vector3 bezierPoint = transform.InverseTransformPoint(container.EvaluatePosition(t));
+            //bezierPoint = transform.InverseTransformPoint(container.EvaluatePosition(t));
             bezierPoint.y -= 4f;
 
             Vector3 bezierPointZ = container.EvaluateTangent(t);
@@ -206,6 +218,7 @@ public class SplineMeshGeneration : MonoBehaviour
             int tri5 = tri0 + 5;
             int tri6 = tri0 + 6;
             int tri7 = tri0 + 7;
+            //I CALLED THESE VERTEX INDICES AS TRIS HERE INITIALLY AND FORGOT TO CHANGE THE NAMING
 
             //Top Triangle
             tris.Add(tri1);
@@ -266,15 +279,14 @@ public class SplineMeshGeneration : MonoBehaviour
         }
         mesh.SetVertices(verts);
         mesh.SetTriangles(tris, 0);
-
-        //Debug.Log($"VERTICES COUNT: {verts.Count}");
-        //Debug.Log($"TRI-INDICES COUNT: {tris.Count}");
     }
+
 
     //Function for drawing gizmo spheres at the pillar's vertices
     void DebugPillarVertices(float t, Vector3 bezierPointX, Vector3 bezierPointZ)
     {
         //Gizmo Debug Vertices for visual representation
+        //The gizmos seem to be always in local transform, so I'm not getting the Inverse here
         Vector3 debugPoint = container.EvaluatePosition(t);
         Vector3 debugPoint1 = debugPoint + (bezierPointX * width / 4) + (bezierPointZ * width / 4);
         Vector3 debugPoint2 = debugPoint - (bezierPointX * width / 4) + (bezierPointZ * width / 4);
@@ -309,14 +321,14 @@ public class SplineMeshGeneration : MonoBehaviour
         for (int i = 0; i < vertices.Count; i++)
         {
             Gizmos.color = Color.yellow;
-            Gizmos.DrawSphere(vertices[i], 10f);
+            Gizmos.DrawSphere(vertices[i], 1f);
         }
 
         //Display column/pillar vertices
         for (int i = 0; i < verticesCol.Count; i++)
         {
             Gizmos.color = Color.green;
-            Gizmos.DrawSphere(verticesCol[i], 10f);
+            Gizmos.DrawSphere(verticesCol[i], 1f);
         }
 
         //Display 't' value, segements, pillar positions
@@ -345,11 +357,13 @@ public class SplineMeshGeneration : MonoBehaviour
         }
 
         Gizmos.color = Color.red;
-        Gizmos.DrawSphere(position, 20f);
+        Gizmos.DrawSphere(position, 1f);
         Gizmos.color = Color.white;
     }
 
 
+
+    //EDITOR HANDLE
     [CustomEditor(typeof(SplineMeshGeneration)), CanEditMultipleObjects]
     public class SplineMeshGenerationEditor : Editor
     {
