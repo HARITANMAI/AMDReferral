@@ -16,6 +16,7 @@ public class SplineMeshGeneration : MonoBehaviour
     [SerializeField, Range(1, 100)] private int segments;
     [SerializeField, Range(0, 1)] private float t;
     [SerializeField, Range(2, 200f)] float width;
+    int vCount = 0;
     Mesh mesh;
 
     [SerializeField, Range(0.01f, 10f)] float animSpeed;
@@ -112,7 +113,7 @@ public class SplineMeshGeneration : MonoBehaviour
 
         //Setting up triangles
         List<int> tris = new List<int>();
-        int vCount = verts.Count;
+        vCount = verts.Count;
         for(int i = 0; i < segments; i++)
         {
             //Multiplying first vertex by 2 since difference between the first vertex of adjacent segements is 2
@@ -138,8 +139,9 @@ public class SplineMeshGeneration : MonoBehaviour
         verticesCol.Clear();
 
         //SUPPORTS COLUMNS/PILLARS UNDER THE ROAD
-        Vector3 pillarOrigin = transform.InverseTransformPoint(container.EvaluatePosition(t));
-        GeneratePillar(pillarOrigin, verts, tris, vCount);
+        GeneratePillar(-width/1.2f, verts, tris);
+
+        GeneratePillar(width/1.2f, verts, tris);
 
 
         //Debug.Log($"VERTICES COUNT: {verts.Count}");
@@ -147,15 +149,16 @@ public class SplineMeshGeneration : MonoBehaviour
     }
 
 
-    void GeneratePillar(Vector3 bezierPoint, List<Vector3> verts, List<int> tris, int vCount)
+    void GeneratePillar(float pillarDisplacement,List<Vector3> verts, List<int> tris)
     {
         for (int i = 1; i < segments; i += 2)
         {
             float t = i / (float)(segments);
+            //Vector3 pillarOrigin = transform.InverseTransformPoint(container.EvaluatePosition(t));
 
             //Getting Bezier point, it's XYZ coords and reducing the y to make it not overlap the road mesh
-            //bezierPoint = transform.InverseTransformPoint(container.EvaluatePosition(t));
-            bezierPoint.y -= 4f;
+            Vector3 bezierPoint = transform.InverseTransformPoint(container.EvaluatePosition(t));
+            bezierPoint.y -= 1f;
 
             Vector3 bezierPointZ = container.EvaluateTangent(t);
             Vector3 bezierPointY = container.EvaluateUpVector(t);
@@ -164,6 +167,9 @@ public class SplineMeshGeneration : MonoBehaviour
             //X and Z needs to be normalized to give accurate mesh vertex coordinates
             bezierPointX.Normalize();
             bezierPointZ.Normalize();
+
+            //Modifying the pillar placement's origin point
+            bezierPoint = bezierPoint + (bezierPointX * pillarDisplacement);
 
             //Four points that form a square around the bezier point which is the center of each segement
             Vector3 point1 = bezierPoint + (bezierPointX * width / 4) + (bezierPointZ * width / 4); //Top right
