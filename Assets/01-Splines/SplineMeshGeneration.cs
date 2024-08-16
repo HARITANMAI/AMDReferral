@@ -16,12 +16,13 @@ public class SplineMeshGeneration : MonoBehaviour
     [SerializeField, Range(1, 100)] private int segments;
     [SerializeField, Range(0, 1)] private float t;
     [SerializeField, Range(2, 200f)] float width;
-    int vCount = 0;
+    [SerializeField, Range(2, 200f)] float thicknes;
     Mesh mesh;
 
     [SerializeField, Range(0.01f, 10f)] float animSpeed;
     [SerializeField] GameObject animObj;
     public bool startAnimation = false;
+    public bool applyThickness = false;
 
     private float3 position;
     private float3 tangent;
@@ -30,6 +31,7 @@ public class SplineMeshGeneration : MonoBehaviour
     //Lists to draw gizmos
     List<Vector3> vertices = new List<Vector3>();
     List<Vector3> verticesCol = new List<Vector3>();
+    int vCount = 0;
 
     private void Awake()
     {
@@ -93,6 +95,7 @@ public class SplineMeshGeneration : MonoBehaviour
             Vector3 bezierPointZ = container.EvaluateTangent(t);
             Vector3 bezierPointX = Vector3.Cross(bezierPointY, bezierPointZ);
             bezierPointX.Normalize();
+            bezierPointY.Normalize();
 
             //Calculating the vertices in local space from the point on the curve
             Vector3 point1 = bezierPoint + (bezierPointX * width);
@@ -110,10 +113,34 @@ public class SplineMeshGeneration : MonoBehaviour
             vertices.Add(point4);
         }
 
+        vCount = verts.Count;
+
+        //Implementing thickness
+        if (applyThickness)
+        {
+            //Debug.Log("THICKNESS IS BEING CALLED!");
+            for (int i = 0; i <= segments; i++)
+            {
+                float t = i / (float)segments;
+
+                //Getting the XYZ Orientation
+                Vector3 bezierPoint = transform.InverseTransformPoint(container.EvaluatePosition(t)); //I'm calling the point on the curve at value 't' as bezier point throughout the code
+                Vector3 bezierPointY = container.EvaluateUpVector(t);
+                Vector3 bezierPointZ = container.EvaluateTangent(t);
+                Vector3 bezierPointX = Vector3.Cross(bezierPointY, bezierPointZ);
+                bezierPointX.Normalize();
+                bezierPointY.Normalize();
+
+                Vector3 upPoint1 = bezierPoint + (bezierPointX * thicknes) + (bezierPointY * thicknes);
+                Vector3 upPoint2 = bezierPoint - (bezierPointX * thicknes) + (bezierPointY * thicknes);
+
+                verts.Add(upPoint1);
+                verts.Add(upPoint2);
+            }
+        }
 
         //Setting up triangles
         List<int> tris = new List<int>();
-        vCount = verts.Count;
         for(int i = 0; i < segments; i++)
         {
             //Multiplying first vertex by 2 since difference between the first vertex of adjacent segements is 2
@@ -133,6 +160,55 @@ public class SplineMeshGeneration : MonoBehaviour
             tris.Add(v1);
             tris.Add(v3);
         }
+
+        //Thickness Tris
+        if (applyThickness)
+        {
+            for (int i = 0; i < segments; i++)
+            {
+                //Multiplying first vertex by 2 since difference between the first vertex of adjacent segements is 2
+                int nv0 = i * 2 + vCount;
+                int nv1 = nv0 + 1;
+                int nv2 = nv0 + 2;
+                int nv3 = nv0 + 3;
+                // % ensures the value doesn't cross the maximum available vertices
+                //int v2 = (v0 + 2) % vCount;
+                //int v3 = (v0 + 3) % vCount;
+
+                tris.Add(nv3);
+                tris.Add(nv2);
+                tris.Add(nv0);
+
+                tris.Add(nv0);
+                tris.Add(nv1);
+                tris.Add(nv3);
+
+                int v0 = i * 2;
+                int v1 = v0 + 1;
+                int v2 = v0 + 2;
+                int v3 = v0 + 3;
+
+                //Right Face
+                tris.Add(nv2);
+                tris.Add(v2);
+                tris.Add(v0);
+
+                tris.Add(nv2);
+                tris.Add(v0);
+                tris.Add(nv0);
+
+                //Left Face
+                tris.Add(nv1);
+                tris.Add(v1);
+                tris.Add(v3);
+
+                tris.Add(nv1);
+                tris.Add(v3);
+                tris.Add(nv3);
+            }
+        }
+
+        vCount = verts.Count;
         mesh.SetVertices(verts);
         mesh.SetTriangles(tris, 0);
         mesh.RecalculateNormals();
@@ -140,14 +216,11 @@ public class SplineMeshGeneration : MonoBehaviour
 
         //SUPPORTS COLUMNS/PILLARS UNDER THE ROAD
         GeneratePillar(-width/1.2f, verts, tris);
-
         GeneratePillar(width/1.2f, verts, tris);
-
 
         //Debug.Log($"VERTICES COUNT: {verts.Count}");
         //Debug.Log($"TRI-INDICES COUNT: {tris.Count}");
     }
-
 
     void GeneratePillar(float pillarDisplacement,List<Vector3> verts, List<int> tris)
     {
