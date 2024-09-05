@@ -13,18 +13,21 @@ using UnityEngine.Splines;
 public class SplineMeshGeneration : MonoBehaviour
 {
     [SerializeField] SplineContainer container;
-    [SerializeField, Range(1, 100)] private int segments;
+    [SerializeField, Range(1, 100)] private int segments = 1;
     [SerializeField, Range(0, 10)] private int pillarSegmentSeperation = 0;
+    [SerializeField, Range(2, 6)] private int pillarWidthControl = 2;
     [SerializeField, Range(0, 1)] private float t;
-    [SerializeField, Range(2, 200f)] float width;
-    [SerializeField, Range(2, 200f)] float thicknes;
-    Mesh mesh;
+    [SerializeField, Range(2, 200f)] float width = 2;
 
-    [SerializeField, Range(0.01f, 10f)] float animSpeed;
-    [SerializeField] GameObject animObj;
-    public bool startAnimation = false;
     public bool applyThickness = false;
+    [SerializeField, Range(2, 200f)] float thickness = 2;
+    [SerializeField, Range(-5, 5)] float thicknessAngle = 0;
 
+    public bool startAnimation = false;
+    [SerializeField, Range(0.01f, 10f)] float animSpeed = 0.01f;
+    [SerializeField] GameObject animObj;
+
+    Mesh mesh;
     private float3 position;
     private float3 tangent;
     private float3 upVector;
@@ -116,7 +119,7 @@ public class SplineMeshGeneration : MonoBehaviour
 
         vCount = verts.Count;
 
-        //Implementing thickness
+        //IMPLEMENTING THICKNESS OF THE SPLINE MESH
         if (applyThickness)
         {
             //Debug.Log("THICKNESS IS BEING CALLED!");
@@ -132,8 +135,9 @@ public class SplineMeshGeneration : MonoBehaviour
                 bezierPointX.Normalize();
                 bezierPointY.Normalize();
 
-                Vector3 upPoint1 = bezierPoint + (bezierPointX * width) + (bezierPointY * thicknes);
-                Vector3 upPoint2 = bezierPoint - (bezierPointX * width) + (bezierPointY * thicknes);
+                // Change X width to modify the angle
+                Vector3 upPoint1 = bezierPoint + (bezierPointX * width * thicknessAngle) + (bezierPointY * thickness);
+                Vector3 upPoint2 = bezierPoint - (bezierPointX * width * thicknessAngle) + (bezierPointY * thickness);
 
                 verts.Add(upPoint1);
                 verts.Add(upPoint2);
@@ -247,10 +251,10 @@ public class SplineMeshGeneration : MonoBehaviour
             bezierPoint = bezierPoint + (bezierPointX * pillarDisplacement);
 
             //Four points that form a square around the bezier point which is the center of each segement
-            Vector3 point1 = bezierPoint + (bezierPointX * width / 4) + (bezierPointZ * width / 4); //Top right
-            Vector3 point2 = bezierPoint - (bezierPointX * width / 4) + (bezierPointZ * width / 4); //Top left
-            Vector3 point3 = bezierPoint + (bezierPointX * width / 4) - (bezierPointZ * width / 4); //Bottom right
-            Vector3 point4 = bezierPoint - (bezierPointX * width / 4) - (bezierPointZ * width / 4); //Bottom left
+            Vector3 point1 = bezierPoint + (bezierPointX * width / pillarWidthControl) + (bezierPointZ * width / pillarWidthControl); //Top right
+            Vector3 point2 = bezierPoint - (bezierPointX * width / pillarWidthControl) + (bezierPointZ * width / pillarWidthControl); //Top left
+            Vector3 point3 = bezierPoint + (bezierPointX * width / pillarWidthControl) - (bezierPointZ * width / pillarWidthControl); //Bottom right
+            Vector3 point4 = bezierPoint - (bezierPointX * width / pillarWidthControl) - (bezierPointZ * width / pillarWidthControl); //Bottom left
 
             verts.Add(point1);
             verts.Add(point2);
@@ -275,10 +279,10 @@ public class SplineMeshGeneration : MonoBehaviour
             groundPoint = new Vector3(bezierPoint.x, groundPoint.y - 10f, bezierPoint.z);
 
             //Four points that form a square at the ground point where the raycast hit
-            Vector3 point5 = groundPoint + (bezierPointX * width / 4) + (bezierPointZ * width / 4);
-            Vector3 point6 = groundPoint - (bezierPointX * width / 4) + (bezierPointZ * width / 4);
-            Vector3 point7 = groundPoint + (bezierPointX * width / 4) - (bezierPointZ * width / 4);
-            Vector3 point8 = groundPoint - (bezierPointX * width / 4) - (bezierPointZ * width / 4);
+            Vector3 point5 = groundPoint + (bezierPointX * width / pillarWidthControl) + (bezierPointZ * width / pillarWidthControl);
+            Vector3 point6 = groundPoint - (bezierPointX * width / pillarWidthControl) + (bezierPointZ * width / pillarWidthControl);
+            Vector3 point7 = groundPoint + (bezierPointX * width / pillarWidthControl) - (bezierPointZ * width / pillarWidthControl);
+            Vector3 point8 = groundPoint - (bezierPointX * width / pillarWidthControl) - (bezierPointZ * width / pillarWidthControl);
 
             verts.Add(point5);
             verts.Add(point6);
