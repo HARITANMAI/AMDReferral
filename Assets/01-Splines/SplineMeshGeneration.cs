@@ -14,6 +14,7 @@ public class SplineMeshGeneration : MonoBehaviour
 {
     [SerializeField] SplineContainer container;
     [SerializeField, Range(1, 100)] private int segments;
+    [SerializeField, Range(0, 10)] private int pillarSegmentSeperation = 0;
     [SerializeField, Range(0, 1)] private float t;
     [SerializeField, Range(2, 200f)] float width;
     [SerializeField, Range(2, 200f)] float thicknes;
@@ -131,8 +132,8 @@ public class SplineMeshGeneration : MonoBehaviour
                 bezierPointX.Normalize();
                 bezierPointY.Normalize();
 
-                Vector3 upPoint1 = bezierPoint + (bezierPointX * thicknes) + (bezierPointY * thicknes);
-                Vector3 upPoint2 = bezierPoint - (bezierPointX * thicknes) + (bezierPointY * thicknes);
+                Vector3 upPoint1 = bezierPoint + (bezierPointX * width) + (bezierPointY * thicknes);
+                Vector3 upPoint2 = bezierPoint - (bezierPointX * width) + (bezierPointY * thicknes);
 
                 verts.Add(upPoint1);
                 verts.Add(upPoint2);
@@ -226,6 +227,7 @@ public class SplineMeshGeneration : MonoBehaviour
     {
         for (int i = 1; i < segments; i += 2)
         {
+            i += pillarSegmentSeperation;
             float t = i / (float)(segments);
             //Vector3 pillarOrigin = transform.InverseTransformPoint(container.EvaluatePosition(t));
 
