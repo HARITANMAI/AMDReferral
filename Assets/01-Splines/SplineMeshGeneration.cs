@@ -15,17 +15,17 @@ public class SplineMeshGeneration : MonoBehaviour
     [SerializeField] SplineContainer container;
     [SerializeField, Range(1, 100)] private int segments = 1;
     [SerializeField, Range(0, 10)] private int pillarSegmentSeperation = 0;
-    [SerializeField, Range(2, 6)] private int pillarWidthControl = 2;
+    [SerializeField, Range(2, 6)] private int pillarWidthControl = 4;
     [SerializeField, Range(0, 1)] private float t;
-    [SerializeField, Range(2, 200f)] float width = 2;
+    [SerializeField, Range(2, 200f)] float width = 20f;
 
     public bool applyThickness = false;
-    [SerializeField, Range(2, 200f)] float thickness = 2;
-    [SerializeField, Range(-5, 5)] float thicknessAngle = 0;
+    [SerializeField, Range(2, 200f)] float thickness = 20f;
+    [SerializeField, Range(-5, 5)] float thicknessAngle = 1;
 
     public bool startAnimation = false;
-    [SerializeField, Range(0.01f, 10f)] float animSpeed = 0.01f;
     [SerializeField] GameObject animObj;
+    [SerializeField, Range(0.01f, 10f)] float animSpeed = 0.01f;
 
     Mesh mesh;
     private float3 position;
