@@ -117,12 +117,33 @@ public class SplineMeshGeneration : MonoBehaviour
             vertices.Add(point4);
         }
 
+        //Setting up triangles
+        List<int> tris = new List<int>();
+        for (int i = 0; i < segments; i++)
+        {
+            //Multiplying first vertex by 2 since difference between the first vertex of adjacent segements is 2
+            int v0 = i * 2;
+            int v1 = v0 + 1;
+            int v2 = v0 + 2;
+            int v3 = v0 + 3;
+            // % ensures the value doesn't cross the maximum available vertices
+            //int v2 = (v0 + 2) % vCount;
+            //int v3 = (v0 + 3) % vCount;
+
+            tris.Add(v3);
+            tris.Add(v2);
+            tris.Add(v0);
+
+            tris.Add(v0);
+            tris.Add(v1);
+            tris.Add(v3);
+        }
+
         vCount = verts.Count;
 
         //IMPLEMENTING THICKNESS OF THE SPLINE MESH
         if (applyThickness)
         {
-            //Debug.Log("THICKNESS IS BEING CALLED!");
             for (int i = 0; i <= segments; i++)
             {
                 float t = i / (float)segments;
@@ -142,36 +163,12 @@ public class SplineMeshGeneration : MonoBehaviour
                 verts.Add(upPoint1);
                 verts.Add(upPoint2);
             }
-        }
 
-        //Setting up triangles
-        List<int> tris = new List<int>();
-        for(int i = 0; i < segments; i++)
-        {
-            //Multiplying first vertex by 2 since difference between the first vertex of adjacent segements is 2
-            int v0  = i * 2;
-            int v1 = v0 + 1;
-            int v2 = v0 + 2;
-            int v3 = v0 + 3;
-            // % ensures the value doesn't cross the maximum available vertices
-            //int v2 = (v0 + 2) % vCount;
-            //int v3 = (v0 + 3) % vCount;
-
-            tris.Add(v3);
-            tris.Add(v2);
-            tris.Add(v0);
-
-            tris.Add(v0);
-            tris.Add(v1);
-            tris.Add(v3);
-        }
-
-        //Thickness Tris
-        if (applyThickness)
-        {
+            //Thickness Tris
             for (int i = 0; i < segments; i++)
             {
                 //Multiplying first vertex by 2 since difference between the first vertex of adjacent segements is 2
+                //Adding vCount to get the indices right for the spine mesh at "thickness" distance
                 int nv0 = i * 2 + vCount;
                 int nv1 = nv0 + 1;
                 int nv2 = nv0 + 2;
@@ -188,10 +185,33 @@ public class SplineMeshGeneration : MonoBehaviour
                 tris.Add(nv1);
                 tris.Add(nv3);
 
+                //Indices for the base spline mesh
                 int v0 = i * 2;
                 int v1 = v0 + 1;
                 int v2 = v0 + 2;
                 int v3 = v0 + 3;
+
+                //Closing the first and last face of the mesh
+                if (i == 0)
+                {
+                    tris.Add(v0);
+                    tris.Add(v1);
+                    tris.Add(nv0);
+
+                    tris.Add(v1);
+                    tris.Add(nv1);
+                    tris.Add(nv0);
+                }
+                else if (i == segments - 1)
+                {
+                    tris.Add(nv2);
+                    tris.Add(v3);
+                    tris.Add(v2);
+
+                    tris.Add(nv2);
+                    tris.Add(nv3);
+                    tris.Add(v3);
+                }
 
                 //Right Face
                 tris.Add(nv2);
